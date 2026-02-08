@@ -53,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <style>
 body {
     background: linear-gradient(to right, #1e90ff, #0a3d62);
+     background:url('uploads/zz.jpg') center/cover no-repeat;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -61,7 +62,7 @@ body {
 }
 
 .form-container {
-    background: white;
+    background: #1e90ff;
     padding: 35px;
     width: 420px;
     border-radius: 10px;
@@ -116,7 +117,7 @@ body {
 
 .link a {
     text-decoration: none;
-    color: #1e90ff;
+    color: #1307F9;
 }
 </style>
 </head>

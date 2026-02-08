@@ -56,7 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <style>
 body {
-    background: linear-gradient(to left, #1e90ff, #0a3d62);
+    background: linear-gradient(to left, #97C2EC, #0a3d62);
+    background:url('uploads/abcd.jpg') center/cover no-repeat;
     font-family: 'Poppins', sans-serif;
     display: flex;
     justify-content: center;
@@ -66,7 +67,7 @@ body {
 }
 
 .form-container {
-    background: white;
+    background:green;
     padding: 40px;
     width: 420px;
     border-radius: 12px;
@@ -78,7 +79,7 @@ body {
 .home-btn {
     display: inline-block;
     padding: 10px 20px;
-    background: #1e90ff;
+    background: #620A0E;
     color: white;
     border-radius: 6px;
     text-decoration: none;
@@ -87,12 +88,12 @@ body {
 }
 
 .home-btn:hover {
-    background: #0d6ed1;
+    background: #620A0E;
 }
 
 .form-container h2 {
     margin-bottom: 25px;
-    color: #0a3d62;
+    color: #ffffff;
     font-size: 28px;
 }
 
@@ -108,13 +109,14 @@ body {
 .form-container button {
     width: 100%;
     padding: 14px;
-    background: #0a3d62;
-    color: white;
+    background:blue;
+    color: #ffffff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     transition: 0.3s;
+    opacity:90%;
 }
 
 .form-container button:hover {
@@ -133,7 +135,7 @@ body {
 
 .link a {
     text-decoration: none;
-    color: #1e90ff;
+    color: #ffffff;
     font-weight: 500;
 }
 

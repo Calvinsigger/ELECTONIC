@@ -17,7 +17,7 @@ $role = $_SESSION['role'] ?? '';
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',sans-serif;}
-body{background:#f4f6f8;}
+body{background:#010B15;}
 
 /* ===== NAVBAR ===== */
 header{
@@ -92,17 +92,17 @@ nav a:hover{color:#ffdd59;}
 /* ===== ABOUT US ===== */
 .about{
     padding:60px 20px;
-    background:#ffffff;
+    background:#5ACFFA;
     text-align:center;
 }
 .about h2{
-    color:#0a3d62;
+    color:#030B11;
     font-size:36px;
     margin-bottom:20px;
 }
 .about p{
     font-size:18px;
-    color:#555;
+    color:#ffffff;
     max-width:800px;
     margin:0 auto;
     line-height:1.6;
@@ -110,7 +110,7 @@ nav a:hover{color:#ffdd59;}
 
 /* ===== CONTACT & LOCATION ===== */
 .contact{
-    background:#f1f5f9;
+    background:#1989F9;
     padding:60px 20px;
     display:flex;
     flex-wrap:wrap;
@@ -122,13 +122,13 @@ nav a:hover{color:#ffdd59;}
     margin:15px;
 }
 .contact-info h3{
-    color:#0a3d62;
+    color:#0D0600;
     font-size:24px;
     margin-bottom:12px;
 }
 .contact-info p{
     font-size:16px;
-    color:#555;
+    color:#ffffff;
     margin-bottom:8px;
     line-height:1.5;
 }
@@ -144,11 +144,16 @@ nav a:hover{color:#ffdd59;}
 .products-section{
     padding:50px 20px;
     text-align:center;
+    background-color: #08B2C8;
 }
 .products-section h2{
-    color:#0a3d62;
-    font-size:36px;
+    color:#0F07F1;
+    font-size:90px;
     margin-bottom:30px;
+}
+product-section p{
+font-size: 70px;
+color: #ffffff;    
 }
 .products{
     display:grid;
@@ -156,7 +161,7 @@ nav a:hover{color:#ffdd59;}
     gap:25px;
 }
 .product-card{
-    background:white;
+    background:#063C68;
     padding:15px;
     border-radius:12px;
     text-align:center;
@@ -253,9 +258,9 @@ footer{
 <section class="contact">
     <div class="contact-info">
         <h3>Contact Us</h3>
-        <p><strong>Phone:</strong> +255 123 456 789</p>
-        <p><strong>Email:</strong> support@electrostore.com</p>
-        <p><strong>Address:</strong> 123 Tech Avenue, Dar es Salaam, Tanzania</p>
+        <p><strong>Phone:</strong> +255787718748</p>
+        <p><strong>Email:</strong> calvinsigger2@gmail.com</p>
+        <p><strong>Address:</strong>Dar es Salaam, Tanzania</p>
         <p><strong>Working Hours:</strong> Mon - Fri: 9:00am - 6:00pm</p>
     </div>
    
@@ -264,6 +269,7 @@ footer{
 <!-- ===== PRODUCTS ===== -->
 <section class="products-section">
     <h2>WELCOME</h2>
+    <p>Discover our wide range of high-quality electronics products.</p>
     <div class="products" id="productsContainer">
         <!-- Products loaded dynamically -->
     </div>
