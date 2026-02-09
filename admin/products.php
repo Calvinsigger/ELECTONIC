@@ -112,6 +112,23 @@ img{
     cursor:pointer;
 }
 .delete-btn:hover{background:#c0392b;}
+
+.flash-message{
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:8px;
+    font-weight:500;
+}
+.flash-success{
+    background:#d4edda;
+    color:#155724;
+    border:1px solid #c3e6cb;
+}
+.flash-error{
+    background:#f8d7da;
+    color:#721c24;
+    border:1px solid #f5c6cb;
+}
 </style>
 </head>
 
@@ -123,6 +140,8 @@ img{
 </header>
 
 <div class="container">
+
+<?php displayFlashMessage(); ?>
 
 <h3>Add New Product</h3>
 
@@ -179,6 +198,7 @@ while ($p = $stmt->fetch(PDO::FETCH_ASSOC)):
     <td>$<?= number_format($p['price'], 2) ?></td>
     <td>
         <form action="../api/products/delete.php" method="POST" style="display:inline;">
+            <?= getCSRFTokenInput() ?>
             <input type="hidden" name="id" value="<?= $p['id'] ?>">
             <button class="delete-btn"
                     onclick="return confirm('Delete this product?')">
