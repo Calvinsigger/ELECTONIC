@@ -49,12 +49,12 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
     color:white;
 }
 .hero-content{max-width:800px;margin:0 auto;}
-.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;color:#4E0CE9F4;text-shadow:3px 3px 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);}
-.hero p{font-size:18px;margin-bottom:40px;opacity:0.98;line-height:1.6;color:#C7D509;text-shadow:2px 2px 8px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.5);}
+.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;color:#ffffff;text-shadow:3px 3px 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);}
+.hero p{font-size:18px;margin-bottom:40px;opacity:0.98;line-height:1.6;color:#ffffff;text-shadow:2px 2px 8px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.5);}
 .cta-btn{
     display:inline-block;
     background:#667eea;
-    color:#011813;
+    color:#ffffff;
     padding:14px 40px;
     border-radius:50px;
     font-weight:700;
