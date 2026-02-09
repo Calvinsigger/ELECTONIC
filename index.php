@@ -39,7 +39,11 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
 /* ===== HERO ===== */
 .hero{
-    background: url('uploads/kks.jfif') center/cover no-repeat fixed;
+    background-image: url('uploads/new.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     padding:100px 20px;
     text-align:center;
     color:white;
