@@ -49,20 +49,21 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
     color:white;
 }
 .hero-content{max-width:800px;margin:0 auto;}
-.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;text-shadow:2px 2px 8px rgba(0,0,0,0.5);}
-.hero p{font-size:18px;margin-bottom:40px;opacity:0.95;line-height:1.6;text-shadow:1px 1px 4px rgba(0,0,0,0.5);}
+.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;color:#ffffff;text-shadow:3px 3px 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);}
+.hero p{font-size:18px;margin-bottom:40px;opacity:0.98;line-height:1.6;color:#ffffff;text-shadow:2px 2px 8px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.5);}
 .cta-btn{
     display:inline-block;
-    background:white;
-    color:#667eea;
+    background:#667eea;
+    color:#ffffff;
     padding:14px 40px;
     border-radius:50px;
     font-weight:700;
     text-decoration:none;
     transition:all 0.3s ease;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    text-shadow:1px 1px 2px rgba(0,0,0,0.3);
 }
-.cta-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.3);color:#764ba2;}
+.cta-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.4);background:#764ba2;}
 
 /* ===== ABOUT US ===== */
 .about{
