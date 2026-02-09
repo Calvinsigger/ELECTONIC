@@ -273,6 +273,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         text-decoration: underline;
     }
 
+    .validation-message {
+        font-size: 13px;
+        margin-top: -10px;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: none;
+        font-weight: 500;
+    }
+
+    .validation-message.error {
+        background: #fee;
+        color: #c33;
+        border-left: 3px solid #c33;
+        display: block;
+        animation: slideIn 0.2s ease;
+    }
+
+    .validation-message.success {
+        background: #efe;
+        color: #338833;
+        border-left: 3px solid #338833;
+        display: block;
+    }
+
+    .validation-message.info {
+        background: #eef;
+        color: #336;
+        border-left: 3px solid #667eea;
+        display: block;
+    }
+
     @media (max-width: 480px) {
         .form-container {
             padding: 30px 20px;
@@ -312,11 +344,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <form method="POST" onsubmit="return validateForm()">
         <?= getCSRFTokenInput() ?>
-        <input type="text" name="fullname" placeholder="Full Name" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>">
-        <input type="email" name="email" placeholder="Email Address" maxlength="100" required value="<?= sanitizeOutput($_POST['email'] ?? '') ?>">
-        <input type="password" name="password" id="password" placeholder="Password (min 8 chars, uppercase, lowercase, number)" minlength="8" required>
-        <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirm Password" minlength="8" required>
-        <small style="color: #666; margin-top: -12px; margin-bottom: 10px; display: block;">Password must contain: uppercase, lowercase, number (min 8 characters)</small>
+        <input type="text" name="fullname" id="fullname" placeholder="Full Name" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>" oninput="validateFullnameField()">
+        <div id="fullnameMsg" class="validation-message info">Full Name must be at least 2 characters</div>
+
+        <input type="email" name="email" id="email" placeholder="Email Address" maxlength="100" required value="<?= sanitizeOutput($_POST['email'] ?? '') ?>" oninput="validateEmailField()">
+        <div id="emailMsg" class="validation-message info">Enter a valid email address (example@domain.com)</div>
+
+        <input type="password" name="password" id="password" placeholder="Password (min 8 chars, uppercase, lowercase, number)" minlength="8" required oninput="validatePasswordField()">
+        <div id="passwordMsg" class="validation-message info">Password must contain: uppercase, lowercase, number (min 8 characters)</div>
+
+        <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirm Password" minlength="8" required oninput="validatePasswordConfirmField()">
+        <div id="passwordConfirmMsg" class="validation-message"></div>
+
         <button type="submit">Register</button>
     </form>
 
@@ -326,50 +365,106 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 <script>
-function validateForm() {
-    const fullname = document.querySelector('input[name="fullname"]').value.trim();
-    const email = document.querySelector('input[name="email"]').value.trim();
+// Real-time validation functions
+function validateFullnameField() {
+    const fullname = document.getElementById("fullname").value.trim();
+    const msg = document.getElementById("fullnameMsg");
+    
+    if (fullname.length === 0) {
+        msg.textContent = "Full Name is required";
+        msg.className = "validation-message error";
+        return false;
+    } else if (fullname.length < 2) {
+        msg.textContent = "Full Name must be at least 2 characters";
+        msg.className = "validation-message error";
+        return false;
+    } else if (fullname.length > 100) {
+        msg.textContent = "Full Name cannot exceed 100 characters";
+        msg.className = "validation-message error";
+        return false;
+    } else {
+        msg.textContent = "✓ Full Name looks good!";
+        msg.className = "validation-message success";
+        return true;
+    }
+}
+
+function validateEmailField() {
+    const email = document.getElementById("email").value.trim();
+    const msg = document.getElementById("emailMsg");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (email.length === 0) {
+        msg.textContent = "Email is required";
+        msg.className = "validation-message error";
+        return false;
+    } else if (!emailRegex.test(email)) {
+        msg.textContent = "Please enter a valid email address (example@domain.com)";
+        msg.className = "validation-message error";
+        return false;
+    } else {
+        msg.textContent = "✓ Email is valid!";
+        msg.className = "validation-message success";
+        return true;
+    }
+}
+
+function validatePasswordField() {
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("passwordMsg");
+    let issues = [];
+    
+    if (password.length === 0) {
+        msg.textContent = "Password is required";
+        msg.className = "validation-message error";
+        return false;
+    }
+    
+    if (password.length < 8) issues.push("at least 8 characters");
+    if (!/[A-Z]/.test(password)) issues.push("1 uppercase letter");
+    if (!/[a-z]/.test(password)) issues.push("1 lowercase letter");
+    if (!/[0-9]/.test(password)) issues.push("1 number");
+    
+    if (issues.length > 0) {
+        msg.textContent = "Missing: " + issues.join(", ");
+        msg.className = "validation-message error";
+        return false;
+    } else {
+        msg.textContent = "✓ Password is strong!";
+        msg.className = "validation-message success";
+        return true;
+    }
+}
+
+function validatePasswordConfirmField() {
     const password = document.getElementById("password").value;
     const passwordConfirm = document.getElementById("password_confirm").value;
+    const msg = document.getElementById("passwordConfirmMsg");
+    
+    if (passwordConfirm.length === 0) {
+        msg.textContent = "Please confirm your password";
+        msg.className = "validation-message error";
+        return false;
+    } else if (password !== passwordConfirm) {
+        msg.textContent = "Passwords do not match";
+        msg.className = "validation-message error";
+        return false;
+    } else {
+        msg.textContent = "✓ Passwords match!";
+        msg.className = "validation-message success";
+        return true;
+    }
+}
 
-    // Fullname validation
-    if (fullname.length < 2) {
-        alert("Name must be at least 2 characters.");
-        return false;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
-        return false;
-    }
-
-    // Password validation
-    if (password.length < 8) {
-        alert("Password must be at least 8 characters.");
-        return false;
-    }
-    if (!/[A-Z]/.test(password)) {
-        alert("Password must contain at least one uppercase letter.");
-        return false;
-    }
-    if (!/[a-z]/.test(password)) {
-        alert("Password must contain at least one lowercase letter.");
-        return false;
-    }
-    if (!/[0-9]/.test(password)) {
-        alert("Password must contain at least one number.");
-        return false;
-    }
-
-    // Password confirmation
-    if (password !== passwordConfirm) {
-        alert("Passwords do not match.");
-        return false;
-    }
-
-    return true;
+function validateForm() {
+    // Run all validations
+    const isFullnameValid = validateFullnameField();
+    const isEmailValid = validateEmailField();
+    const isPasswordValid = validatePasswordField();
+    const isPasswordConfirmValid = validatePasswordConfirmField();
+    
+    // Return true only if all fields are valid
+    return isFullnameValid && isEmailValid && isPasswordValid && isPasswordConfirmValid;
 }
 </script>
 

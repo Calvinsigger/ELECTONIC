@@ -49,12 +49,12 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
     color:white;
 }
 .hero-content{max-width:800px;margin:0 auto;}
-.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;color:#ffffff;text-shadow:3px 3px 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);}
-.hero p{font-size:18px;margin-bottom:40px;opacity:0.98;line-height:1.6;color:#ffffff;text-shadow:2px 2px 8px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.5);}
+.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;color:#4E0CE9F4;text-shadow:3px 3px 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);}
+.hero p{font-size:18px;margin-bottom:40px;opacity:0.98;line-height:1.6;color:#C7D509;text-shadow:2px 2px 8px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.5);}
 .cta-btn{
     display:inline-block;
     background:#667eea;
-    color:#ffffff;
+    color:#011813;
     padding:14px 40px;
     border-radius:50px;
     font-weight:700;
@@ -75,7 +75,7 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 .about h2{font-size:40px;color:#0a3d62;margin-bottom:25px;font-weight:700;}
 .about-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;margin-top:40px;}
 .about-card{
-    background:white;
+    background:black;
     padding:30px;
     border-radius:12px;
     box-shadow:0 4px 20px rgba(0,0,0,0.08);
@@ -109,7 +109,7 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 .contact-card strong{font-weight:600;}
 
 /* ===== PRODUCTS SECTION ===== */
-.products-section{padding:80px 20px;background:#f8f9fa;}
+.products-section{padding:80px 20px;background:#04111F;}
 .products-section .container{max-width:1100px;margin:0 auto;}
 .section-header{text-align:center;margin-bottom:50px;}
 .section-header h2{font-size:40px;color:#0a3d62;font-weight:700;margin-bottom:15px;}
@@ -121,7 +121,7 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
     gap:25px;
 }
 .product-card{
-    background:white;
+    background:black;
     border-radius:12px;
     overflow:hidden;
     box-shadow:0 4px 20px rgba(0,0,0,0.08);
