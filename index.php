@@ -43,7 +43,7 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     padding:100px 20px;
     text-align:center;
     color:white;
