@@ -16,7 +16,7 @@ $role = $_SESSION['role'] ?? '';
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:#f8f9fa;color:#333;}
+body{background:#B4B4B9;color:#333;}
 
 /* ===== NAVBAR ===== */
 header{
