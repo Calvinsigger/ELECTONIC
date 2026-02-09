@@ -39,15 +39,14 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
 /* ===== HERO ===== */
 .hero{
-    background:linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('uploads/') center/cover no-repeat;
-    background-attachment: fixed;
+    background: url('uploads/kks.jfif') center/cover no-repeat fixed;
     padding:100px 20px;
     text-align:center;
     color:white;
 }
 .hero-content{max-width:800px;margin:0 auto;}
-.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;}
-.hero p{font-size:18px;margin-bottom:40px;opacity:0.95;line-height:1.6;}
+.hero h1{font-size:48px;font-weight:700;margin-bottom:20px;letter-spacing:-1px;text-shadow:2px 2px 8px rgba(0,0,0,0.5);}
+.hero p{font-size:18px;margin-bottom:40px;opacity:0.95;line-height:1.6;text-shadow:1px 1px 4px rgba(0,0,0,0.5);}
 .cta-btn{
     display:inline-block;
     background:white;
