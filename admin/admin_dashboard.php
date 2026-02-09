@@ -34,42 +34,49 @@ $recentOrders = $conn->query("
 <meta charset="UTF-8">
 <title>Admin Dashboard | ElectroStore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-body {background:#f4f6f8;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;}
 
-/* ===== LAYOUT ===== */
-.wrapper {display:flex;min-height:100vh;}
+.wrapper{display:flex;min-height:100vh;}
 
-/* ===== SIDEBAR ===== */
-.sidebar {width:240px;background:#0a3d62;color:white;padding:20px;}
-.sidebar h2 {text-align:center;margin-bottom:30px;}
-.sidebar a {display:block;color:white;text-decoration:none;padding:10px;margin-bottom:8px;border-radius:4px;}
-.sidebar a:hover {background: rgba(255,255,255,0.2);}
+/* SIDEBAR */
+.sidebar{width:260px;background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;padding:30px 20px;box-shadow:4px 0 15px rgba(0,0,0,0.2);position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar h2{text-align:center;margin-bottom:40px;font-size:22px;font-weight:700;letter-spacing:0.5px;}
+.sidebar a{display:block;color:white;text-decoration:none;padding:14px 16px;margin-bottom:8px;border-radius:8px;transition:all 0.3s ease;font-weight:500;border-left:4px solid transparent;}
+.sidebar a:hover{background:rgba(255,255,255,0.2);border-left:4px solid #ffdd59;padding-left:20px;}
 
-/* ===== MAIN ===== */
-.main {flex:1;padding:30px;}
-.main h1 {margin-bottom:20px;color:#0a3d62;}
+/* MAIN */
+.main{flex:1;padding:40px;background:#f8f9fa;}
+.main h1{margin-bottom:35px;color:#0a3d62;font-size:32px;font-weight:700;}
 
-/* ===== CARDS ===== */
-.cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:30px;}
-.card {background:white;padding:20px;border-radius:6px;text-align:center;box-shadow:0 0 8px rgba(0,0,0,0.1);}
-.card h3 {margin-bottom:10px;color:#555;}
-.card p {font-size:28px;font-weight:bold;color:#0a3d62;}
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;margin-bottom:30px;}
+.card{background:white;padding:25px;border-radius:12px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:all 0.3s ease;border-left:5px solid #667eea;}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 30px rgba(0,0,0,0.12);}
+.card h3{margin-bottom:15px;color:#666;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:0.5px;}
+.card p{font-size:36px;font-weight:700;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
-/* ===== TABLE ===== */
-.table-box {background:white;padding:20px;border-radius:6px;box-shadow:0 0 8px rgba(0,0,0,0.1);overflow-x:auto;}
-table {width:100%;border-collapse:collapse;}
-th, td {padding:12px;border-bottom:1px solid #ddd;text-align:left;white-space:nowrap;}
-th {background:#0a3d62;color:white;}
-tr:hover {background:#f1f1f1;}
-button.view-items {padding:4px 8px;background:#3498db;color:white;border:none;border-radius:4px;cursor:pointer;}
-button.view-items:hover {background:#2c80b4;}
-.details-row {display:none;background:#f9f9f9;}
-.details-row td {border-top:1px solid #ddd;padding:10px;}
+/* TABLE BOX */
+.table-box{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);overflow-x:auto;}
+.table-box h2{margin-bottom:20px;color:#0a3d62;font-size:20px;}
+table{width:100%;border-collapse:collapse;}
+th{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:15px;text-align:left;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:12px 15px;border-bottom:1px solid #f0f0f0;color:#555;}
+tr:hover{background:#f8f9fa;}
+tr:last-child td{border-bottom:none;}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:768px) {.wrapper{flex-direction:column;}.sidebar{width:100%;}}
+button.view-items{padding:8px 16px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
+button.view-items:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4);}
+
+.details-row{display:none;background:#f8f9fa;}
+.details-row td{padding:15px;border-top:2px solid #e0e0e0;}
+.details-row ul{margin-left:20px;}
+.details-row li{margin:8px 0;color:#666;}
+
+/* RESPONSIVE */
+@media(max-width:768px){.wrapper{flex-direction:column;}.sidebar{width:100%;height:auto;position:static;}.cards{grid-template-columns:1fr;}}
 </style>
 
 <script>
@@ -86,13 +93,13 @@ function toggleDetails(orderId){
 
     <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
-        <h2>Admin Panel</h2>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="add_products.php">Manage Products</a>
-        <a href="categories.php">Categories</a>
-        <a href="users.php">Users</a>
-        <a href="orders.php">Orders</a>
-        <a href="../logout.php">Logout</a>
+        <h2>📊 Admin Panel</h2>
+        <a href="admin_dashboard.php">🏠 Dashboard</a>
+        <a href="products.php">📦 Products</a>
+        <a href="categories.php">🏷️ Categories</a>
+        <a href="users.php">👥 Users</a>
+        <a href="orders.php">📋 Orders</a>
+        <a href="../logout.php">🚪 Logout</a>
     </div>
 
     <!-- ===== MAIN ===== -->

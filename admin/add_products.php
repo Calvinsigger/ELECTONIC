@@ -92,89 +92,130 @@ $categories = $conn->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSO
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Products | ElectroStore</title>
+<title>Add Products | Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{margin:0;font-family:Segoe UI;background:#f4f6f8}
-.wrapper{display:flex;min-height:100vh}
-.sidebar{width:240px;background:#0a3d62;color:#fff;padding:20px}
-.sidebar a{display:block;color:#fff;text-decoration:none;padding:10px;margin-bottom:8px;border-radius:4px}
-.sidebar a:hover{background:rgba(255,255,255,.2)}
-.main{flex:1;padding:30px}
-h1{color:#0a3d62}
-.box{background:#fff;padding:20px;border-radius:6px;margin-bottom:25px;box-shadow:0 0 8px rgba(0,0,0,.1)}
-input,select{width:100%;padding:10px;margin-bottom:10px}
-button{padding:10px 15px;border:none;border-radius:4px;cursor:pointer}
-.add{background:#1e90ff;color:#fff}
-.edit{background:#28a745;color:#fff}
-.del{background:#dc3545;color:#fff}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px;border-bottom:1px solid #ddd}
-th{background:#0a3d62;color:#fff}
-img{width:70px;height:70px;object-fit:cover;border-radius:4px}
-.msg{text-align:center;color:green;margin-bottom:10px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;}
+
+.wrapper{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:260px;background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;padding:30px 20px;box-shadow:4px 0 15px rgba(0,0,0,0.2);position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar h2{text-align:center;margin-bottom:40px;font-size:22px;font-weight:700;letter-spacing:0.5px;}
+.sidebar a{display:block;color:white;text-decoration:none;padding:14px 16px;margin-bottom:8px;border-radius:8px;transition:all 0.3s ease;font-weight:500;border-left:4px solid transparent;}
+.sidebar a:hover{background:rgba(255,255,255,0.2);border-left:4px solid #ffdd59;padding-left:20px;}
+
+/* MAIN */
+.main{flex:1;padding:40px;background:#f8f9fa;overflow-y:auto;}
+.main h1{margin-bottom:35px;color:#0a3d62;font-size:32px;font-weight:700;}
+.main h3{margin-top:35px;margin-bottom:20px;color:#0a3d62;font-size:20px;font-weight:600;}
+
+/* FORM BOX */
+.form-box{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:30px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:15px;}
+.form-grid input,.form-grid select{padding:12px 15px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:all 0.3s ease;font-family:inherit;}
+.form-grid input:focus,.form-grid select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
+.btn{padding:12px 24px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4);}
+.btn-small{padding:8px 16px;font-size:13px;}
+.btn-delete{background:#e74c3c;}
+.btn-delete:hover{background:#c0392b;}
+
+/* MESSAGE */
+.message{padding:15px 20px;margin-bottom:20px;border-radius:8px;border-left:4px solid;font-weight:600;}
+.message-success{background:#d4edda;color:#155724;border-left-color:#28a745;}
+
+/* TABLE BOX */
+.table-box{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:15px;text-align:left;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:12px 15px;border-bottom:1px solid #f0f0f0;color:#555;}
+tr:hover{background:#f8f9fa;}
+tr:last-child td{border-bottom:none;}
+img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #e0e0e0;}
+
+@media(max-width:768px){.wrapper{flex-direction:column;}.sidebar{width:100%;height:auto;position:static;}.form-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 
 <body>
 <div class="wrapper">
 
-<div class="sidebar">
-    <h2>Admin Panel</h2>
-    <a href="admin_dashboard.php">Dashboard</a>
-    <a href="products.php">Products</a>
-    <a href="../logout.php">Logout</a>
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <h2>📊 Admin Panel</h2>
+        <a href="admin_dashboard.php">🏠 Dashboard</a>
+        <a href="products.php">📦 Products</a>
+        <a href="categories.php">🏷️ Categories</a>
+        <a href="users.php">👥 Users</a>
+        <a href="orders.php">📋 Orders</a>
+        <a href="../logout.php">🚪 Logout</a>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main">
+        <h1>📦 Product Management</h1>
+
+        <?php if($message): ?>
+            <div class="message message-success">✅ <?= $message ?></div>
+        <?php endif; ?>
+
+        <h3>➕ Add New Product</h3>
+        <div class="form-box">
+            <form method="POST" enctype="multipart/form-data" class="form-grid">
+                <input type="hidden" name="action" value="add">
+                <input type="text" name="name" placeholder="Product Name" required>
+                <input type="number" step="0.01" name="price" placeholder="Price (e.g., 49.99)" required>
+                <input type="number" name="stock" placeholder="Stock Quantity" min="0" required>
+                <select name="category" required>
+                    <option value="">🏷️ Select Category</option>
+                    <?php foreach($categories as $c): ?>
+                        <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['category_name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+                <button type="submit" class="btn">✓ Add Product</button>
+            </form>
+        </div>
+
+        <h3>📋 All Products</h3>
+        <div class="table-box">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Action</th>
+                </tr>
+                <?php foreach($products as $p): ?>
+                <tr>
+                    <td>#<?= $p['id'] ?></td>
+                    <td><?= $p['image'] ? "<img src='../uploads/{$p['image']}' alt='{$p['product_name']}'>" : "—" ?></td>
+                    <td><?= htmlspecialchars($p['product_name']) ?></td>
+                    <td>$<?= number_format($p['price'],2) ?></td>
+                    <td><?= $p['stock'] ?></td>
+                    <td><?= htmlspecialchars($p['category_name']) ?></td>
+                    <td>
+                        <a href="?delete=<?= $p['id'] ?>" onclick="return confirm('Delete this product?');" style="text-decoration:none;">
+                            <button class="btn btn-small btn-delete">🗑️ Delete</button>
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+
+    </div>
 </div>
 
-<div class="main">
-<h1>Manage Products</h1>
-
-<?php if($message): ?><p class="msg"><?= $message ?></p><?php endif; ?>
-
-<div class="box">
-<form method="POST" enctype="multipart/form-data">
-<input type="hidden" name="action" value="add">
-<input name="name" placeholder="Product Name" required>
-<input type="number" step="0.01" name="price" placeholder="Price" required>
-<input type="number" name="stock" placeholder="Stock Quantity" min="0" required>
-<select name="category" required>
-<option value="">Select Category</option>
-<?php foreach($categories as $c): ?>
-<option value="<?= $c['id'] ?>"><?= $c['category_name'] ?></option>
-<?php endforeach; ?>
-</select>
-<input type="file" name="image">
-<button class="add">Add Product</button>
-</form>
-</div>
-
-<div class="box">
-<table>
-<tr>
-<th>ID</th><th>Image</th><th>Name</th><th>Price</th><th>Stock</th><th>Category</th><th>Action</th>
-</tr>
-<?php foreach($products as $p): ?>
-<tr>
-<td><?= $p['id'] ?></td>
-<td><?= $p['image'] ? "<img src='../uploads/{$p['image']}'>" : "—" ?></td>
-<td><?= htmlspecialchars($p['product_name']) ?></td>
-<td>$<?= number_format($p['price'],2) ?></td>
-<td><?= $p['stock'] ?></td>
-<td><?= $p['category_name'] ?></td>
-<td>
-<a href="?delete=<?= $p['id'] ?>" onclick="return confirm('Delete?')">
-<button class="del">Delete</button>
-</a>
-</td>
-</tr>
-<?php endforeach; ?>
-</table>
-</div>
-
-</div>
-</div>
 </body>
 </html>
