@@ -109,43 +109,207 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
 <meta charset="UTF-8">
 <title>Checkout | ElectroStore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
-body{background:#f4f6f8;color:#333}
-header{background:#0a3d62;color:#fff;padding:15px 30px;display:flex;justify-content:space-between;align-items:center}
-header .logo{font-size:22px;font-weight:bold}
-header nav a{color:#fff;text-decoration:none;margin-left:18px;font-weight:500}
-header nav a:hover{color:#ffdd59}
-.container{max-width:1100px;margin:30px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.1)}
-h1{color:#0a3d62;margin-bottom:20px;text-align:center}
-.cart-item{display:flex;align-items:center;border-bottom:1px solid #eee;padding:15px 0}
-.cart-item img{width:100px;height:100px;object-fit:cover;border-radius:8px;margin-right:20px}
-.cart-item .info{flex:1}
-.cart-item .info h3{margin-bottom:5px}
-.cart-item .info .qty-price{color:#777;font-size:14px}
-.cart-total{text-align:right;font-size:20px;font-weight:bold;margin:20px 0;color:#0a3d62}
-form input, form textarea{width:100%;padding:12px;margin-bottom:15px;border-radius:6px;border:1px solid #ccc;font-size:16px}
-form button{padding:15px;background:#0a3d62;color:#fff;border:none;border-radius:8px;font-size:16px;width:100%;cursor:pointer}
-form button:hover{background:#07406b}
-.message{text-align:center;color:green;font-weight:bold;margin-bottom:15px}
-.empty{text-align:center;padding:50px;font-size:18px;color:#777}
-@media(max-width:768px){.cart-item{flex-direction:column;align-items:flex-start}.cart-item img{margin-bottom:10px}}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;color:#333;}
+
+/* HEADER */
+header{
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+}
+header .logo{font-size:26px;font-weight:700;letter-spacing:0.5px;}
+header nav a{color:white;text-decoration:none;margin-left:20px;font-weight:500;transition:all 0.3s ease;}
+header nav a:hover{color:#ffdd59;transform:translateY(-2px);}
+
+/* CONTAINER */
+.container{
+    max-width:900px;
+    margin:40px auto;
+    padding:30px;
+    background:white;
+    border-radius:14px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.12);
+}
+h1{color:#0a3d62;margin-bottom:30px;font-size:32px;font-weight:700;text-align:center;}
+
+/* MESSAGE */
+.message{
+    text-align:center;
+    color:#155724;
+    background:#d4edda;
+    border:2px solid #28a745;
+    border-left:4px solid #28a745;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+/* CART ITEMS */
+.cart-items{background:#f8f9fa;padding:20px;border-radius:10px;margin-bottom:25px;}
+.cart-item{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:15px;
+    background:white;
+    border-radius:10px;
+    margin-bottom:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+.cart-item img{width:120px;height:120px;object-fit:cover;border-radius:10px;border:2px solid #e0e0e0;}
+.cart-item .info{flex:1;}
+.cart-item .info h3{color:#0a3d62;margin-bottom:8px;font-weight:600;}
+.cart-item .qty-price{color:#666;font-size:14px;margin-bottom:5px;}
+.cart-item .price{font-size:18px;font-weight:700;color:#667eea;}
+
+/* GRAND TOTAL */
+.cart-total{
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
+    padding:20px;
+    border-radius:10px;
+    text-align:right;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:30px;
+}
+
+/* FORM */
+form input, form textarea{
+    width:100%;
+    padding:14px 16px;
+    margin-bottom:15px;
+    border-radius:8px;
+    border:2px solid #e0e0e0;
+    font-size:16px;
+    transition:all 0.3s ease;
+    font-family:inherit;
+}
+form input:focus, form textarea:focus{
+    outline:none;
+    border-color:#667eea;
+    box-shadow:0 0 0 3px rgba(102,126,234,0.1);
+}
+form button{
+    padding:14px 28px;
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    width:100%;
+    cursor:pointer;
+    font-weight:600;
+    transition:all 0.3s ease;
+}
+form button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.3);}
+
+/* EMPTY */
+.empty{
+    text-align:center;
+    padding:50px;
+    background:#f8f9fa;
+    border-radius:12px;
+    color:#999;
+    font-size:18px;
+}
+.empty a{color:#667eea;font-weight:600;text-decoration:none;transition:all 0.3s ease;}
+.empty a:hover{color:#764ba2;text-decoration:underline;}
+
+@media(max-width:768px){.cart-item{flex-direction:column;}.cart-item img{width:100%;}}
 </style>
 </head>
 
 <body>
 <header>
-    <div class="logo">ElectroStore</div>
+    <div class="logo">🛍️ ElectroStore</div>
     <nav>
-        <a href="shop.php">Shop</a>
-        <a href="cart.php">Cart</a>
-        <a href="my_orders.php">My Orders</a>
-        <a href="../logout.php">Logout</a>
+        <a href="customer_dashboard.php">📊 Dashboard</a>
+        <a href="shop.php">🏪 Shop</a>
+        <a href="cart.php">🛒 Cart</a>
+        <a href="../logout.php">🚪 Logout</a>
     </nav>
 </header>
 
 <div class="container">
-<h1>Checkout</h1>
+    <h1>💳 Checkout</h1>
+
+    <?php if($orderMsg): ?>
+        <p class="message"><?= $orderMsg ?></p>
+    <?php endif; ?>
+
+    <?php if(!empty($emptyCart)): ?>
+        <div class="empty">
+            🛒 Your cart is empty! <br><br>
+            <a href="shop.php">← Continue shopping</a>
+        </div>
+    <?php else: ?>
+        <!-- CART ITEMS -->
+        <div class="cart-items">
+            <?php $grandTotal=0; ?>
+            <?php foreach($cartItems as $item): ?>
+                <div class="cart-item">
+                    <img src="../uploads/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
+                    <div class="info">
+                        <h3>📦 <?= htmlspecialchars($item['product_name']) ?></h3>
+                        <div class="qty-price">Quantity: <?= $item['quantity'] ?> × $<?= number_format($item['price'],2) ?></div>
+                    </div>
+                    <div class="price">
+                        $<?= number_format($item['price']*$item['quantity'],2) ?>
+                    </div>
+                </div>
+                <?php $grandTotal += $item['price'] * $item['quantity']; ?>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="cart-total">💰 Grand Total: $<?= number_format($grandTotal,2) ?></div>
+
+        <!-- SHIPPING FORM -->
+        <form method="POST" onsubmit="return validateCheckoutForm()">
+            <?= getCSRFTokenInput() ?>
+            <input type="text" name="fullname" placeholder="👤 Full Name (min 2 characters)" minlength="2" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>">
+            <textarea name="address" placeholder="📍 Shipping Address (min 5 characters)" minlength="5" maxlength="255" rows="3" required><?= sanitizeOutput($_POST['address'] ?? '') ?></textarea>
+            <input type="tel" name="phone" placeholder="📱 Phone Number (7-20 digits)" pattern="[0-9\+\-\(\)\s]{7,20}" maxlength="20" required value="<?= sanitizeOutput($_POST['phone'] ?? '') ?>">
+            <button type="submit" name="place_order">✓ Place Order</button>
+        </form>
+    <?php endif; ?>
+</div>
+
+<script>
+function validateCheckoutForm() {
+    const fullname = document.querySelector('input[name="fullname"]').value.trim();
+    const address = document.querySelector('textarea[name="address"]').value.trim();
+    const phone = document.querySelector('input[name="phone"]').value.trim();
+
+    if (fullname.length < 2) {
+        alert("Name must be at least 2 characters.");
+        return false;
+    }
+
+    if (address.length < 5) {
+        alert("Address must be at least 5 characters.");
+        return false;
+    }
+
+    if (phone.length < 7 || phone.length > 20) {
+        alert("Phone number must be between 7-20 characters.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+</body>
+</html>
 
 <?php if($orderMsg): ?>
     <p class="message"><?= $orderMsg ?></p>

@@ -23,94 +23,98 @@ $maxPrice = ceil($priceStats['max_price'] ?? 1000);
 <title>Shop | ElectroStore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f4f6f8;}
-header{background:#0a3d62;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:22px;font-weight:bold}
-nav a{color:white;text-decoration:none;margin-left:18px;font-weight:500}
-nav a:hover{color:#ffdd59}
-.hero{background:linear-gradient(to right,#1e90ff,#0a3d62);color:white;padding:45px 20px;text-align:center}
-.hero h1{font-size:36px;margin-bottom:8px}
-.hero p{opacity:.9}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;}
 
-/* FILTERS SECTION */
-.filters-container{background:white;padding:20px;margin:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.filter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:15px}
-.filter-group{display:flex;flex-direction:column}
-.filter-group label{font-weight:600;margin-bottom:6px;color:#0a3d62;font-size:14px}
-.filter-group input,.filter-group select{padding:10px;border-radius:6px;border:1px solid #ccc;font-size:14px}
-.price-range-display{font-size:13px;color:#666;margin-top:4px}
-.filter-buttons{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap}
-.btn-search,.btn-reset{padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:.3s}
-.btn-search{background:#0a3d62;color:white}
-.btn-search:hover{background:#07406b}
-.btn-reset{background:#95a5a6;color:white}
-.btn-reset:hover{background:#7f8c8d}
+/* HEADER */
+header{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:18px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 15px rgba(0,0,0,0.15);}
+.logo{font-size:26px;font-weight:700;letter-spacing:0.5px;}
+nav a{color:white;text-decoration:none;margin-left:20px;font-weight:500;transition:all 0.3s ease;}
+nav a:hover{color:#ffdd59;transform:translateY(-2px);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:45px 20px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.hero h1{font-size:36px;margin-bottom:10px;font-weight:700;}
+.hero p{opacity:0.9;font-size:16px;}
+
+/* FILTERS */
+.filters-container{background:white;padding:25px;margin:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.filter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:15px;}
+.filter-group{display:flex;flex-direction:column;}
+.filter-group label{font-weight:600;margin-bottom:8px;color:#0a3d62;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+.filter-group input,.filter-group select{padding:12px 14px;border-radius:8px;border:2px solid #e0e0e0;font-size:14px;transition:all 0.3s ease;font-family:inherit;}
+.filter-group input:focus,.filter-group select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
+.price-range-display{font-size:12px;color:#666;margin-top:6px;}
+.filter-buttons{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;}
+.btn-search,.btn-reset{padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
+.btn-search{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;}
+.btn-search:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4);}
+.btn-reset{background:#95a5a6;color:white;}
+.btn-reset:hover{background:#7f8c8d;transform:translateY(-2px);}
 
 /* RESULTS INFO */
-.results-info{padding:15px 20px;background:#f9f9f9;border-radius:6px;margin:0 20px;font-size:14px;color:#666;display:flex;justify-content:space-between;align-items:center}
-.results-count{font-weight:600;color:#0a3d62}
-.no-results{text-align:center;padding:50px 20px;color:#666}
+.results-info{padding:15px 25px;background:white;border-radius:10px;margin:0 30px;font-size:14px;color:#666;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.results-count{font-weight:600;color:#667eea;}
+.no-results{background:white;text-align:center;padding:50px 20px;color:#999;border-radius:12px;margin:30px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
 
 /* PRODUCTS */
-.products{padding:30px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
-.product-card{background:white;border-radius:10px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);transition:.3s;display:flex;flex-direction:column}
-.product-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,.15)}
-.product-card img{width:100%;height:160px;object-fit:cover;border-radius:8px}
-.product-card h3{margin:10px 0 4px;font-size:16px}
-.category{font-size:13px;color:#888}
-.price{font-size:18px;font-weight:bold;color:#0a3d62;margin:6px 0 8px}
-.stock-status{font-size:12px;margin:4px 0}
-.stock-status.in-stock{color:#27ae60}
-.stock-status.low-stock{color:#f39c12}
-.stock-status.out-of-stock{color:#e74c3c}
-.view-btn{margin-top:auto;text-align:center}
-.view-btn a{display:block;padding:10px;background:#0a3d62;color:white;text-decoration:none;border-radius:6px;font-weight:500;font-size:14px}
-.view-btn a:hover{background:#07406b}
+.products{padding:30px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:25px;}
+.product-card{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    transition:all 0.3s ease;
+    display:flex;
+    flex-direction:column;
+    border-left:5px solid #667eea;
+}
+.product-card:hover{transform:translateY(-8px);box-shadow:0 12px 35px rgba(102,126,234,0.25);}
+.product-card img{width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:12px;}
+.product-card h3{margin:0 0 6px;font-size:16px;color:#0a3d62;font-weight:600;}
+.category{font-size:12px;color:#999;margin-bottom:8px;}
+.price{font-size:20px;font-weight:700;color:#667eea;margin:8px 0;}
+.stock-status{font-size:12px;margin:6px 0;font-weight:600;}
+.stock-status.in-stock{color:#27ae60;}
+.stock-status.low-stock{color:#f39c12;}
+.stock-status.out-of-stock{color:#e74c3c;}
+.view-btn{margin-top:auto;text-align:center;}
+.view-btn a{display:block;padding:12px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;transition:all 0.3s ease;}
+.view-btn a:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4);}
 
 /* PAGINATION */
-.pagination{display:flex;justify-content:center;gap:8px;margin:30px 0;flex-wrap:wrap}
-.pagination a,.pagination span{padding:8px 12px;border:1px solid #ccc;border-radius:4px;cursor:pointer;text-decoration:none;color:#0a3d62;transition:.3s}
-.pagination a:hover{background:#0a3d62;color:white}
-.pagination .active{background:#0a3d62;color:white;border-color:#0a3d62}
-.pagination .disabled{color:#ccc;cursor:not-allowed}
+.pagination{display:flex;justify-content:center;gap:8px;margin:30px 0;flex-wrap:wrap;}
+.pagination a,.pagination span{padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;text-decoration:none;color:#0a3d62;transition:all 0.3s ease;font-weight:600;}
+.pagination a:hover{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;border-color:#667eea;}
+.pagination .active{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;border-color:#667eea;}
+.pagination .disabled{color:#ccc;cursor:not-allowed;}
 
-/* LOADING */
-.spinner{display:inline-block;width:20px;height:20px;border:3px solid #f3f3f3;border-top:3px solid #0a3d62;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+/* FOOTER */
+footer{background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;text-align:center;padding:20px;margin-top:30px;font-weight:500;}
 
-/* RESPONSIVE */
-@media(max-width:768px){
-    .filter-row{grid-template-columns:1fr}
-    .products{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;padding:15px}
-    .filter-buttons{flex-direction:column}
-    .btn-search,.btn-reset{width:100%}
-}
-
-footer{background:#0a3d62;color:white;text-align:center;padding:15px;margin-top:25px}
+@media(max-width:768px){.filter-row{grid-template-columns:1fr;}.products{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;padding:15px;}.filter-buttons{flex-direction:column;}.btn-search,.btn-reset{width:100%;}}
 </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">ElectroStore</div>
+    <div class="logo">🛍️ ElectroStore</div>
     <nav>
-        <a href="customer_dashboard.php">Dashboard</a>
-        <a href="shop.php">Shop</a>
-        <a href="cart.php">Cart</a>
-        <a href="my_orders.php">My Orders</a>
-        <a href="../logout.php">Logout</a>
+        <a href="customer_dashboard.php">📊 Dashboard</a>
+        <a href="shop.php">🏪 Shop</a>
+        <a href="cart.php">🛒 Cart</a>
+        <a href="../logout.php">🚪 Logout</a>
     </nav>
 </header>
 
 <section class="hero">
-    <h1>Explore Our Products</h1>
+    <h1>🔍 Explore Our Products</h1>
     <p>High-quality electronics at unbeatable prices</p>
 </section>
 
 <!-- ADVANCED FILTERS -->
 <div class="filters-container">
-    <h3 style="color:#0a3d62;margin-top:0">Search & Filter Products</h3>
+    <h3 style="color:#0a3d62;margin-top:0">🔎 Search & Filter Products</h3>
     
     <div class="filter-row">
         <div class="filter-group">

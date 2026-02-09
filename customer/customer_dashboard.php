@@ -33,61 +33,85 @@ $recentOrders = $stmt->fetchAll();
 <meta charset="UTF-8">
 <title>Customer Dashboard | ElectroStore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ===== GENERAL ===== */
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-body { background:#f4f6f8; color:#333; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;color:#333;}
 
-/* ===== HEADER ===== */
-header {
-    background:#0a3d62; color:#fff;
-    padding:15px 30px;
-    display:flex; justify-content: space-between; align-items:center;
-    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+/* HEADER */
+header{
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
 }
-header .logo { font-size:24px; font-weight:bold; }
-nav a { color:white; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
-nav a:hover { color:#1e90ff; }
+header .logo{font-size:26px;font-weight:700;letter-spacing:0.5px;}
+nav a{color:white;text-decoration:none;margin-left:20px;font-weight:500;transition:all 0.3s ease;}
+nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
-/* ===== DASHBOARD LAYOUT ===== */
-.wrapper { display:flex; flex-wrap:wrap; padding:20px; gap:20px; justify-content:center; }
+/* WRAPPER */
+.wrapper{display:flex;flex-wrap:wrap;padding:30px 20px;gap:25px;justify-content:center;min-height:calc(100vh - 70px);}
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-    flex:0 0 220px; background:#0a3d62; color:white;
-    padding:20px; border-radius:8px;
+/* SIDEBAR */
+.sidebar{
+    flex:0 0 220px;
+    background:white;
+    color:#333;
+    padding:25px 20px;
+    border-radius:12px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    height:fit-content;
 }
-.sidebar h2 { text-align:center; margin-bottom:20px; }
-.sidebar a {
-    display:block; color:white; text-decoration:none; padding:10px;
-    margin-bottom:8px; border-radius:5px; transition:0.3s;
+.sidebar h2{text-align:center;margin-bottom:25px;color:#0a3d62;font-size:18px;font-weight:700;}
+.sidebar a{
+    display:block;
+    color:#333;
+    text-decoration:none;
+    padding:12px 14px;
+    margin-bottom:8px;
+    border-radius:8px;
+    transition:all 0.3s ease;
+    font-weight:500;
+    border-left:4px solid transparent;
 }
-.sidebar a:hover { background:rgba(255,255,255,0.2); }
+.sidebar a:hover{background:linear-gradient(135deg, #667eea15 0%, #764ba215 100%);border-left:4px solid #667eea;padding-left:18px;}
 
-/* ===== MAIN ===== */
-.main { flex:1; min-width:300px; padding:20px; }
-.main h1 { color:#0a3d62; margin-bottom:20px; }
+/* MAIN */
+.main{flex:1;min-width:300px;}
+.main h1{color:white;margin-bottom:30px;font-size:32px;font-weight:700;}
 
-/* ===== CARDS ===== */
-.cards { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:30px; }
-.card { background:white; border-radius:10px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); text-align:center; }
-.card h3 { margin-bottom:10px; color:#555; }
-.card p { font-size:20px; font-weight:bold; color:#0a3d62; }
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:25px;margin-bottom:30px;}
+.card{
+    background:white;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    text-align:center;
+    transition:all 0.3s ease;
+    border-left:5px solid #667eea;
+}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 30px rgba(0,0,0,0.12);}
+.card h3{margin-bottom:15px;color:#666;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+.card p{font-size:24px;font-weight:700;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
-/* ===== TABLE ===== */
-.table-box { background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-table { width:100%; border-collapse:collapse; }
-th, td { padding:12px; border-bottom:1px solid #ddd; text-align:left; }
-th { background:#0a3d62; color:white; }
-tr:hover { background:#f1f1f1; }
+/* TABLE BOX */
+.table-box{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.table-box h2{margin-bottom:20px;color:#0a3d62;font-size:20px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:15px;text-align:left;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:12px 15px;border-bottom:1px solid #f0f0f0;color:#555;}
+tr:hover{background:#f8f9fa;}
+tr:last-child td{border-bottom:none;}
 
-/* ===== BUTTONS ===== */
-button { padding:10px 16px; border:none; border-radius:6px; background:#1e90ff; color:white; cursor:pointer; transition:0.3s; }
-button:hover { background:#0d74d1; }
+button{padding:10px 16px;border:none;border-radius:6px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
+button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4);}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:768px){ .wrapper { flex-direction:column; } .sidebar { width:100%; } }
+@media(max-width:768px){.wrapper{flex-direction:column;}.sidebar{flex:0 0 100%;}nav{display:none;}}
 </style>
 </head>
 <body>

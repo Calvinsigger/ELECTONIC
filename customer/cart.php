@@ -39,41 +39,35 @@ foreach ($cartItems as $item) {
 <title>My Cart | ElectroStore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Cart | ElectroStore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box}
-body{
-    margin:0;
-    font-family:'Segoe UI', Arial, sans-serif;
-    background:#f4f6f8;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;}
 
 /* HEADER */
 header{
-    background:#0a3d62;
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color:white;
-    padding:15px 30px;
+    padding:18px 30px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
 }
-.logo{font-size:22px;font-weight:bold}
-nav a{
-    color:white;
-    text-decoration:none;
-    margin-left:18px;
-}
-nav a:hover{color:#ffdd59}
+header .logo{font-size:26px;font-weight:700;letter-spacing:0.5px;}
+nav a{color:white;text-decoration:none;margin-left:20px;font-weight:500;transition:all 0.3s ease;}
+nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
 /* CONTAINER */
-.container{
-    max-width:1100px;
-    margin:40px auto;
-    padding:0 20px;
-}
-h1{
-    color:#0a3d62;
-    margin-bottom:20px;
-}
+.container{max-width:1100px;margin:40px auto;padding:0 20px;}
+h1{color:white;margin-bottom:30px;font-size:32px;font-weight:700;}
 
 /* TABLE */
 table{
@@ -82,123 +76,54 @@ table{
     background:white;
     border-radius:12px;
     overflow:hidden;
-    box-shadow:0 10px 22px rgba(0,0,0,.15);
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
 }
-th,td{
-    padding:15px;
-    border-bottom:1px solid #eee;
-    text-align:center;
-}
-th{
-    background:#0a3d62;
-    color:white;
-}
-td img{
-    width:70px;
-    height:70px;
-    object-fit:cover;
-    border-radius:8px;
-}
-.product{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    text-align:left;
-}
+th,td{padding:16px 18px;border-bottom:1px solid #f0f0f0;text-align:center;}
+th{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+td{color:#555;}
+tr:hover{background:#f8f9fa;}
+tr:last-child td{border-bottom:none;}
+
+td img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #e0e0e0;}
+.product{display:flex;align-items:center;gap:14px;text-align:left;}
 
 /* INPUT */
-input[type=number]{
-    width:70px;
-    padding:8px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    text-align:center;
-}
+input[type=number]{width:70px;padding:10px;border-radius:6px;border:2px solid #e0e0e0;text-align:center;transition:all 0.3s ease;}
+input[type=number]:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 
 /* BUTTONS */
-button{
-    border:none;
-    padding:8px 14px;
-    border-radius:6px;
-    cursor:pointer;
-    color:white;
-}
-.update{
-    background:#27ae60;
-}
-.update:hover{background:#1e8449}
-.remove{
-    background:#c0392b;
-}
-.remove:hover{background:#922b21}
+button{border:none;padding:10px 16px;border-radius:6px;cursor:pointer;color:white;font-weight:600;transition:all 0.3s ease;}
+.remove{background:#e74c3c;}
+.remove:hover{background:#c0392b;transform:translateY(-2px);}
 
 /* SUMMARY */
 .summary{
-    margin-top:20px;
+    margin-top:25px;
     background:white;
-    padding:20px;
+    padding:25px;
     border-radius:12px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    box-shadow:0 8px 18px rgba(0,0,0,.15);
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
     font-size:18px;
+    font-weight:600;
 }
-.total{
-    font-weight:bold;
-    font-size:22px;
-}
+.total{font-size:28px;color:linear-gradient(135deg, #667eea, #764ba2);font-weight:700;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
 /* CHECKOUT */
-.checkout{
-    margin-top:20px;
-    text-align:right;
-}
-.checkout button{
-    background:#0a3d62;
-    padding:12px 22px;
-    font-size:16px;
-}
-.checkout button:hover{
-    background:#07406b;
-}
+.checkout{margin-top:25px;text-align:right;}
+.checkout button{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:14px 32px;font-size:16px;}
+.checkout button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.3);}
 
-/* EMPTY */
-.empty{
-    background:white;
-    padding:40px;
-    border-radius:12px;
-    text-align:center;
-    box-shadow:0 8px 18px rgba(0,0,0,.15);
-}
-.empty a{
-    text-decoration:none;
-    color:#1e90ff;
-    font-weight:bold;
-}
+/* EMPTY CART */
+.empty{background:white;padding:50px 30px;border-radius:12px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.empty h2{color:#0a3d62;margin-bottom:15px;font-size:24px;}
+.empty p{color:#666;margin-bottom:20px;}
+.empty a{text-decoration:none;color:white;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:12px 24px;border-radius:8px;display:inline-block;font-weight:600;transition:all 0.3s ease;}
+.empty a:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(102,126,234,0.3);}
 
-/* RESPONSIVE */
-@media(max-width:800px){
-    table, thead, tbody, th, td, tr{
-        display:block;
-    }
-    thead{display:none}
-    tr{
-        margin-bottom:15px;
-        border-bottom:2px solid #ddd;
-    }
-    td{
-        text-align:right;
-        padding-left:50%;
-        position:relative;
-    }
-    td::before{
-        content:attr(data-label);
-        position:absolute;
-        left:15px;
-        font-weight:bold;
-    }
-}
+@media(max-width:800px){table,thead,tbody,th,td,tr{display:block;}thead{display:none}tr{margin-bottom:15px;border-bottom:2px solid #ddd;background:white;border-radius:10px;padding:15px;}td{text-align:right;padding-left:50%;position:relative;}td::before{content:attr(data-label);position:absolute;left:15px;font-weight:bold;}.summary{flex-direction:column;gap:10px;text-align:center;}}
 </style>
 </head>
 

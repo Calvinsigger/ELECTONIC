@@ -51,107 +51,97 @@ $inStock = $stock > 0;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f4f6f8}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100vh;color:#333;}
 
+/* HEADER */
 header{
-    background:#0a3d62;
-    color:#fff;
-    padding:15px 30px;
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
+    padding:18px 30px;
     display:flex;
     justify-content:space-between;
-    align-items:center
+    align-items:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
 }
-.logo{font-size:22px;font-weight:bold}
-nav a{color:#fff;text-decoration:none;margin-left:18px}
-nav a:hover{color:#ffdd59}
+header .logo{font-size:26px;font-weight:700;letter-spacing:0.5px;}
+nav a{color:white;text-decoration:none;margin-left:20px;font-weight:500;transition:all 0.3s ease;}
+nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
+/* CONTAINER */
 .container{
     max-width:1100px;
     margin:40px auto;
-    background:#fff;
+    background:white;
     border-radius:14px;
-    padding:30px;
-    box-shadow:0 12px 25px rgba(0,0,0,.15);
+    padding:40px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.12);
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:30px
+    gap:40px;
 }
 
 .product-image img{
     width:100%;
-    height:420px;
+    height:450px;
     object-fit:cover;
-    border-radius:12px
+    border-radius:12px;
+    border:3px solid #e0e0e0;
 }
 
-.product-info h1{margin-top:0;font-size:30px}
-.category{color:#777;margin-bottom:6px}
-.price{font-size:26px;font-weight:bold;color:#0a3d62;margin:15px 0}
-.description{line-height:1.6;margin-bottom:20px}
+.product-info h1{margin-top:0;font-size:32px;color:#0a3d62;font-weight:700;margin-bottom:12px;}
+.category{color:#999;margin-bottom:15px;font-size:14px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
+.price{font-size:36px;font-weight:700;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:20px 0;}
+.description{line-height:1.8;margin-bottom:25px;color:#666;font-size:15px;}
 
-.stock{
-    font-weight:bold;
-    margin-bottom:15px;
-    font-size:16px
-}
-.stock.in{color:#28a745}
-.stock.out{color:#dc3545}
+/* STOCK */
+.stock{font-weight:700;margin-bottom:20px;font-size:16px;padding:12px 16px;border-radius:8px;display:inline-block;}
+.stock.in{color:white;background:#27ae60;}
+.stock.out{color:white;background:#e74c3c;}
 
-.quantity{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:20px
-}
-.quantity input{
-    width:80px;
-    padding:10px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    text-align:center
-}
+/* QUANTITY */
+.quantity{display:flex;align-items:center;gap:15px;margin-bottom:25px;}
+.quantity label{font-weight:600;color:#0a3d62;}
+.quantity input{width:90px;padding:12px 14px;border-radius:8px;border:2px solid #e0e0e0;text-align:center;font-size:15px;transition:all 0.3s ease;font-family:inherit;}
+.quantity input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 
+/* BUTTON */
 .add-btn{
-    background:#0a3d62;
-    color:#fff;
+    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white;
     border:none;
-    padding:14px;
+    padding:14px 28px;
     width:100%;
     font-size:16px;
     border-radius:8px;
-    cursor:pointer
+    cursor:pointer;
+    font-weight:600;
+    transition:all 0.3s ease;
 }
-.add-btn:hover{background:#07406b}
-.add-btn:disabled{background:#999;cursor:not-allowed}
+.add-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.3);}
+.add-btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none;}
 
-.back{margin-top:20px}
-.back a{text-decoration:none;color:#1e90ff}
+/* BACK */
+.back{margin-top:25px;}
+.back a{text-decoration:none;color:#667eea;font-weight:600;transition:all 0.3s ease;}
+.back a:hover{color:#764ba2;}
 
-footer{
-    background:#0a3d62;
-    color:#fff;
-    text-align:center;
-    padding:15px;
-    margin-top:30px
-}
+/* FOOTER */
+footer{background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;text-align:center;padding:20px;margin-top:30px;font-weight:500;}
 
-@media(max-width:900px){
-    .container{grid-template-columns:1fr}
-    .product-image img{height:300px}
-}
+@media(max-width:900px){.container{grid-template-columns:1fr;gap:30px;}.product-image img{height:350px;}}
 </style>
 </head>
 
 <body>
 
 <header>
-    <div class="logo">ElectroStore</div>
+    <div class="logo">🛍️ ElectroStore</div>
     <nav>
-        <a href="shop.php">Shop</a>
-        <a href="cart.php">Cart</a>
-        <a href="my_orders.php">My Orders</a>
-        <a href="../logout.php">Logout</a>
+        <a href="customer_dashboard.php">📊 Dashboard</a>
+        <a href="shop.php">🏪 Shop</a>
+        <a href="cart.php">🛒 Cart</a>
+        <a href="../logout.php">🚪 Logout</a>
     </nav>
 </header>
 
