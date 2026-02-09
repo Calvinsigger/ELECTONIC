@@ -144,12 +144,31 @@ body {
 
 .link {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .link a {
     text-decoration: none;
     color: #1307F9;
+}
+
+.home-btn {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    background: #0a3d62;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.home-btn:hover {
+    background: #07406b;
 }
 </style>
 </head>
@@ -157,6 +176,7 @@ body {
 <body>
 
 <div class="form-container">
+    <a href="index.php" class="home-btn">← Home</a>
     <h2>Create Account</h2>
 
     <?php if ($message): ?>
