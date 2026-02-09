@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once "../api/db.php";
+require_once "../api/validation.php";
+require_once "../api/security.php";
 
 /* ===== SECURITY: CUSTOMER ONLY ===== */
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
@@ -27,42 +29,76 @@ if (!$cartItems) {
 /* ===== PLACE ORDER ===== */
 $orderMsg = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
-    $fullname = trim($_POST['fullname']);
-    $address  = trim($_POST['address']);
-    $phone    = trim($_POST['phone']);
 
-    if ($cartItems) {
-        // Calculate total
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item['price'] * $item['quantity'];
+    /* ===== CSRF TOKEN VALIDATION ===== */
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $orderMsg = "Security token is invalid. Please try again.";
+    } else {
+
+        $fullname = $_POST['fullname'] ?? '';
+        $address  = $_POST['address'] ?? '';
+        $phone    = $_POST['phone'] ?? '';
+
+        // Validate fullname
+        $nameValidation = validateFullname($fullname);
+        if (!$nameValidation['valid']) {
+            $orderMsg = $nameValidation['message'];
         }
+        // Validate address
+        else {
+            $addressValidation = validateAddress($address);
+            if (!$addressValidation['valid']) {
+                $orderMsg = $addressValidation['message'];
+            } else {
+                // Validate phone
+                $phoneValidation = validatePhone($phone);
+                if (!$phoneValidation['valid']) {
+                    $orderMsg = $phoneValidation['message'];
+                } else if (!$cartItems) {
+                    $orderMsg = "Your cart is empty.";
+                } else {
 
-        // Insert into orders
-        $stmt = $conn->prepare("
-            INSERT INTO orders (user_id, fullname, address, phone, total_amount)
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([$user_id, $fullname, $address, $phone, $total]);
-        $order_id = $conn->lastInsertId();
+                    try {
+                        // Calculate total
+                        $total = 0;
+                        foreach ($cartItems as $item) {
+                            $total += $item['price'] * $item['quantity'];
+                        }
 
-        // Insert order items
-        $stmt = $conn->prepare("
-            INSERT INTO order_items (order_id, product_id, quantity, price)
-            VALUES (?, ?, ?, ?)
-        ");
-        foreach ($cartItems as $item) {
-            $stmt->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
+                        // Insert into orders
+                        $stmt = $conn->prepare("
+                            INSERT INTO orders (user_id, fullname, address, phone, total_amount)
+                            VALUES (?, ?, ?, ?, ?)
+                        ");
+                        $stmt->execute([$user_id, $fullname, $addressValidation['value'], $phoneValidation['value'], $total]);
+                        $order_id = $conn->lastInsertId();
 
-            // Reduce product stock
-            $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?")
-                ->execute([$item['quantity'], $item['product_id']]);
+                        // Insert order items
+                        $stmt = $conn->prepare("
+                            INSERT INTO order_items (order_id, product_id, quantity, price)
+                            VALUES (?, ?, ?, ?)
+                        ");
+                        foreach ($cartItems as $item) {
+                            $stmt->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
+
+                            // Reduce product stock
+                            $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?")
+                                ->execute([$item['quantity'], $item['product_id']]);
+                        }
+
+                        // Clear cart
+                        $conn->prepare("DELETE FROM cart WHERE user_id=?")->execute([$user_id]);
+
+                        $orderMsg = "✅ Your order has been placed successfully! Order ID: #$order_id";
+                        $emptyCart = true;
+                        $cartItems = [];
+
+                    } catch (PDOException $e) {
+                        $orderMsg = "Error placing order: " . $e->getMessage();
+                    }
+                }
+            }
         }
-
-        // Clear cart
-        $conn->prepare("DELETE FROM cart WHERE user_id=?")->execute([$user_id]);
-
-        $orderMsg = "✅ Your order has been placed successfully! Order ID: #$order_id";
     }
 }
 ?>
@@ -137,13 +173,39 @@ form button:hover{background:#07406b}
     <div class="cart-total">Grand Total: $<?= number_format($grandTotal,2) ?></div>
 
     <!-- SHIPPING FORM -->
-    <form method="POST">
-        <input type="text" name="fullname" placeholder="Full Name" required>
-        <textarea name="address" placeholder="Shipping Address" rows="3" required></textarea>
-        <input type="text" name="phone" placeholder="Phone Number" required>
+    <form method="POST" onsubmit="return validateCheckoutForm()">
+        <?= getCSRFTokenInput() ?>
+        <input type="text" name="fullname" placeholder="Full Name (min 2 characters)" minlength="2" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>">
+        <textarea name="address" placeholder="Shipping Address (min 5 characters)" minlength="5" maxlength="255" rows="3" required><?= sanitizeOutput($_POST['address'] ?? '') ?></textarea>
+        <input type="tel" name="phone" placeholder="Phone Number (7-20 digits)" pattern="[0-9\+\-\(\)\s]{7,20}" maxlength="20" required value="<?= sanitizeOutput($_POST['phone'] ?? '') ?>">
         <button type="submit" name="place_order">Place Order</button>
     </form>
 <?php endif; ?>
 </div>
+
+<script>
+function validateCheckoutForm() {
+    const fullname = document.querySelector('input[name="fullname"]').value.trim();
+    const address = document.querySelector('textarea[name="address"]').value.trim();
+    const phone = document.querySelector('input[name="phone"]').value.trim();
+
+    if (fullname.length < 2) {
+        alert("Name must be at least 2 characters.");
+        return false;
+    }
+
+    if (address.length < 5) {
+        alert("Address must be at least 5 characters.");
+        return false;
+    }
+
+    if (phone.length < 7 || phone.length > 20) {
+        alert("Phone number must be between 7-20 characters.");
+        return false;
+    }
+
+    return true;
+}
+</script>
 </body>
 </html>

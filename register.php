@@ -1,42 +1,74 @@
 <?php
 session_start();
 require_once "api/db.php";
+require_once "api/validation.php";
+require_once "api/security.php";
 
 $message = "";
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $fullname = trim($_POST["fullname"]);
-    $email    = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
-    $password = $_POST["password"];
-    $role     = "customer"; // Automatically assign role as 'customer'
-
-    /* ===== BASIC VALIDATION ===== */
-    if (strlen($password) < 6) {
-        $error = "Password must be at least 6 characters long.";
+    /* ===== CSRF TOKEN VALIDATION ===== */
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $error = "Security token is invalid. Please try again.";
     } else {
 
-        /* ===== CHECK EMAIL ===== */
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
+        /* ===== INPUT VALIDATION ===== */
+        $fullname = $_POST["fullname"] ?? '';
+        $email    = $_POST["email"] ?? '';
+        $password = $_POST["password"] ?? '';
+        $password_confirm = $_POST["password_confirm"] ?? '';
+        $role     = "customer";
 
-        if ($stmt->rowCount() > 0) {
-            $error = "Email already registered.";
-        } else {
-
-            /* ===== INSERT USER ===== */
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare(
-                "INSERT INTO users (fullname, email, password_hash, role)
-                 VALUES (?, ?, ?, ?)"
-            );
-
-            if ($stmt->execute([$fullname, $email, $password_hash, $role])) {
-                $message = "Registration successful! You can now <a href='login.php'>login</a>.";
+        // Validate fullname
+        $nameValidation = validateFullname($fullname);
+        if (!$nameValidation['valid']) {
+            $error = $nameValidation['message'];
+        }
+        // Validate email
+        elseif (!validateEmail($email)) {
+            $error = "Invalid email format.";
+        }
+        // Check password match
+        elseif ($password !== $password_confirm) {
+            $error = "Passwords do not match.";
+        }
+        // Validate password strength
+        else {
+            $passwordValidation = validatePassword($password);
+            if (!$passwordValidation['valid']) {
+                $error = $passwordValidation['message'];
             } else {
-                $error = "Something went wrong. Please try again.";
+
+                /* ===== CHECK EMAIL UNIQUENESS ===== */
+                $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+                $stmt->execute([$email]);
+
+                if ($stmt->rowCount() > 0) {
+                    $error = "Email already registered.";
+                } else {
+
+                    /* ===== INSERT USER ===== */
+                    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                    try {
+                        $stmt = $conn->prepare(
+                            "INSERT INTO users (fullname, email, password_hash, role)
+                             VALUES (?, ?, ?, ?)"
+                        );
+
+                        if ($stmt->execute([$fullname, $email, $password_hash, $role])) {
+                            $message = "✅ Registration successful! You can now <a href='login.php'>login</a>.";
+                            // Clear form
+                            $_POST = [];
+                        } else {
+                            $error = "Registration failed. Please try again.";
+                        }
+                    } catch (PDOException $e) {
+                        $error = "Database error: " . $e->getMessage();
+                    }
+                }
             }
         }
     }
@@ -136,9 +168,12 @@ body {
     <?php endif; ?>
 
     <form method="POST" onsubmit="return validateForm()">
-        <input type="text" name="fullname" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email Address" required>
-        <input type="password" name="password" id="password" placeholder="Password" required>
+        <?= getCSRFTokenInput() ?>
+        <input type="text" name="fullname" placeholder="Full Name" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>">
+        <input type="email" name="email" placeholder="Email Address" maxlength="100" required value="<?= sanitizeOutput($_POST['email'] ?? '') ?>">
+        <input type="password" name="password" id="password" placeholder="Password (min 8 chars, uppercase, lowercase, number)" minlength="8" required>
+        <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirm Password" minlength="8" required>
+        <small style="color: #666; margin-top: -12px; margin-bottom: 10px; display: block;">Password must contain: uppercase, lowercase, number (min 8 characters)</small>
         <button type="submit">Register</button>
     </form>
 
@@ -149,11 +184,48 @@ body {
 
 <script>
 function validateForm() {
+    const fullname = document.querySelector('input[name="fullname"]').value.trim();
+    const email = document.querySelector('input[name="email"]').value.trim();
     const password = document.getElementById("password").value;
-    if (password.length < 6) {
-        alert("Password must be at least 6 characters.");
+    const passwordConfirm = document.getElementById("password_confirm").value;
+
+    // Fullname validation
+    if (fullname.length < 2) {
+        alert("Name must be at least 2 characters.");
         return false;
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return false;
+    }
+
+    // Password validation
+    if (password.length < 8) {
+        alert("Password must be at least 8 characters.");
+        return false;
+    }
+    if (!/[A-Z]/.test(password)) {
+        alert("Password must contain at least one uppercase letter.");
+        return false;
+    }
+    if (!/[a-z]/.test(password)) {
+        alert("Password must contain at least one lowercase letter.");
+        return false;
+    }
+    if (!/[0-9]/.test(password)) {
+        alert("Password must contain at least one number.");
+        return false;
+    }
+
+    // Password confirmation
+    if (password !== passwordConfirm) {
+        alert("Passwords do not match.");
+        return false;
+    }
+
     return true;
 }
 </script>

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once "../api/db.php";
+require_once "../api/validation.php";
+require_once "../api/security.php";
 
 /* ===== SECURITY: CUSTOMER ONLY ===== */
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer'){
@@ -10,6 +12,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer'){
 
 $userId = $_SESSION['user_id'];
 $message = "";
+$errorMsg = "";
 
 /* ===== FETCH CUSTOMER ===== */
 $stmt = $conn->prepare("SELECT fullname, email, profile_image FROM users WHERE id = ?");
@@ -18,29 +21,65 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 /* ===== UPDATE PROFILE ===== */
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $name  = trim($_POST['fullname']);
-    $email = trim($_POST['email']);
 
-    /* IMAGE UPLOAD */
-    $imageName = $user['profile_image'];
-    if(isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === 0){
-        $ext = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
-        $imageName = uniqid("profile_") . "." . $ext;
-        move_uploaded_file($_FILES['profile_image']['tmp_name'], "../uploads/" . $imageName);
+    /* ===== CSRF TOKEN VALIDATION ===== */
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $errorMsg = "Security token is invalid. Please try again.";
+    } else {
+
+        $name  = $_POST['fullname'] ?? '';
+        $email = $_POST['email'] ?? '';
+
+        // Validate fullname
+        $nameValidation = validateFullname($name);
+        if (!$nameValidation['valid']) {
+            $errorMsg = $nameValidation['message'];
+        }
+        // Validate email
+        elseif (!validateEmail($email)) {
+            $errorMsg = "Invalid email format.";
+        } else {
+
+            /* IMAGE UPLOAD */
+            $imageName = $user['profile_image'];
+            if(isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] !== UPLOAD_ERR_NO_FILE){
+                
+                // Validate image file
+                $imageValidation = validateImageFile($_FILES['profile_image']);
+                if (!$imageValidation['valid']) {
+                    $errorMsg = $imageValidation['message'];
+                } else {
+                    $ext = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+                    $imageName = uniqid("profile_") . "." . $ext;
+                    $uploadPath = "../uploads/" . $imageName;
+                    
+                    if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadPath)) {
+                        $errorMsg = "Failed to upload image.";
+                    }
+                }
+            }
+
+            // If no errors, update profile
+            if (empty($errorMsg)) {
+                try {
+                    $update = $conn->prepare("
+                        UPDATE users 
+                        SET fullname = ?, email = ?, profile_image = ?
+                        WHERE id = ?
+                    ");
+                    $update->execute([$name, $email, $imageName, $userId]);
+
+                    $message = "✅ Profile updated successfully!";
+
+                    // Refresh data
+                    $stmt->execute([$userId]);
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                } catch (PDOException $e) {
+                    $errorMsg = "Database error: " . $e->getMessage();
+                }
+            }
+        }
     }
-
-    $update = $conn->prepare("
-        UPDATE users 
-        SET fullname = ?, email = ?, profile_image = ?
-        WHERE id = ?
-    ");
-    $update->execute([$name, $email, $imageName, $userId]);
-
-    $message = "✅ Profile updated successfully";
-
-    // Refresh data
-    $stmt->execute([$userId]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>
@@ -185,32 +224,38 @@ button:hover{background:#07406b}
     <h1>My Profile</h1>
 
     <?php if($message): ?>
-        <div class="message"><?= $message ?></div>
+        <div class="message" style="background:#e8f8f5;color:#27ae60;"><?= sanitizeOutput($message) ?></div>
+    <?php endif; ?>
+
+    <?php if($errorMsg): ?>
+        <div class="message" style="background:#fadbd8;color:#e74c3c;"><?= sanitizeOutput($errorMsg) ?></div>
     <?php endif; ?>
 
     <form method="POST" enctype="multipart/form-data">
+        <?= getCSRFTokenInput() ?>
         <div class="profile-grid">
 
             <!-- PROFILE IMAGE -->
             <div class="avatar-box">
-                <img src="../uploads/<?= $user['profile_image'] ?: 'default.png' ?>" class="avatar">
+                <img src="../uploads/<?= sanitizeOutput($user['profile_image'] ?: 'default.png') ?>" class="avatar" alt="Profile">
                 <br>
                 <label class="upload-label">
                     Change Photo
-                    <input type="file" name="profile_image" hidden accept="image/*">
+                    <input type="file" name="profile_image" hidden accept="image/jpeg,image/png,image/gif,image/webp">
                 </label>
+                <small style="color:#666;display:block;margin-top:8px;">Max 5MB • JPG, PNG, GIF, WebP</small>
             </div>
 
             <!-- PROFILE INFO -->
             <div>
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" name="fullname" value="<?= htmlspecialchars($user['fullname']) ?>" required>
+                    <input type="text" name="fullname" minlength="2" maxlength="100" value="<?= sanitizeOutput($user['fullname']) ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+                    <input type="email" name="email" maxlength="100" value="<?= sanitizeOutput($user['email']) ?>" required>
                 </div>
 
                 <button type="submit">Update Profile</button>

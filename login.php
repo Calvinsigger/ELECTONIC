@@ -1,48 +1,64 @@
 <?php
 session_start();
 require_once __DIR__ . "/api/db.php";
+require_once __DIR__ . "/api/validation.php";
+require_once __DIR__ . "/api/security.php";
 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $email    = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
-    $password = $_POST["password"];
+    /* ===== CSRF TOKEN VALIDATION ===== */
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $error = "Security token is invalid. Please try again.";
+    } else {
 
-    try {
-        // Fetch user including status
-        $stmt = $conn->prepare("SELECT id, fullname, email, password_hash, role, status FROM users WHERE email = ? LIMIT 1");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $email    = $_POST["email"] ?? '';
+        $password = $_POST["password"] ?? '';
 
-        if ($user && password_verify($password, $user["password_hash"])) {
-
-            // Check if user is blocked
-            if ($user["status"] === "blocked") {
-                $error = "Your account has been blocked. Contact admin.";
-            } else {
-                // Store session
-                $_SESSION["user_id"]   = $user["id"];
-                $_SESSION["fullname"]  = $user["fullname"];
-                $_SESSION["role"]      = $user["role"];
-
-                // Redirect based on role
-                if ($user["role"] === "admin") {
-                    header("Location: admin/admin_dashboard.php");
-                } elseif ($user["role"] === "customer") {
-                    header("Location: customer/customer_dashboard.php");
-                } else {
-                    $error = "User role not recognized!";
-                }
-                exit;
-            }
-
+        // Validate email format
+        if (!validateEmail($email)) {
+            $error = "Invalid email format.";
+        } else if (isEmpty($password)) {
+            $error = "Password is required.";
         } else {
-            $error = "Invalid email or password.";
-        }
 
-    } catch (PDOException $e) {
-        $error = "Database error: " . $e->getMessage();
+            try {
+                // Fetch user including status
+                $stmt = $conn->prepare("SELECT id, fullname, email, password_hash, role, status FROM users WHERE email = ? LIMIT 1");
+                $stmt->execute([$email]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($user && password_verify($password, $user["password_hash"])) {
+
+                    // Check if user is blocked
+                    if ($user["status"] === "blocked") {
+                        $error = "Your account has been blocked. Contact admin.";
+                    } else {
+                        // Store session
+                        $_SESSION["user_id"]   = $user["id"];
+                        $_SESSION["fullname"]  = $user["fullname"];
+                        $_SESSION["role"]      = $user["role"];
+
+                        // Redirect based on role
+                        if ($user["role"] === "admin") {
+                            header("Location: admin/admin_dashboard.php");
+                        } elseif ($user["role"] === "customer") {
+                            header("Location: customer/customer_dashboard.php");
+                        } else {
+                            $error = "User role not recognized!";
+                        }
+                        exit;
+                    }
+
+                } else {
+                    $error = "Invalid email or password.";
+                }
+
+            } catch (PDOException $e) {
+                $error = "Database error: " . $e->getMessage();
+            }
+        }
     }
 }
 ?>
@@ -157,8 +173,9 @@ body {
     <?php endif; ?>
 
     <form method="POST" autocomplete="off">
-        <input type="email" name="email" placeholder="Email Address" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <?= getCSRFTokenInput() ?>
+        <input type="email" name="email" placeholder="Email Address" maxlength="100" required value="<?= sanitizeOutput($_POST['email'] ?? '') ?>">
+        <input type="password" name="password" placeholder="Password" maxlength="100" required>
         <button type="submit">Login</button>
     </form>
 

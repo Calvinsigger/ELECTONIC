@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . "/../api/db.php";
+require_once __DIR__ . "/../api/security.php";
 
 /* ===== ADMIN CHECK ===== */
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -127,9 +128,11 @@ img{
 
 <form action="../api/products/create.php" method="POST" enctype="multipart/form-data">
 
-    <input type="text" name="product_name" placeholder="Product Name" required>
+    <?= getCSRFTokenInput() ?>
 
-    <input type="number" step="0.01" name="price" placeholder="Price" required>
+    <input type="text" name="product_name" placeholder="Product Name" minlength="3" maxlength="150" required>
+
+    <input type="number" step="0.01" name="price" placeholder="Price" min="0.01" max="999999.99" required>
 
     <!-- CATEGORY SELECT -->
     <select name="category_id" required>
@@ -141,9 +144,9 @@ img{
         <?php endforeach; ?>
     </select>
 
-    <input type="file" name="image" accept="image/*" required>
+    <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" required>
 
-    <textarea name="description" placeholder="Product description (optional)"></textarea>
+    <textarea name="description" placeholder="Product description (optional, max 1000 characters)" maxlength="1000"></textarea>
 
     <button type="submit">Add Product</button>
 </form>
