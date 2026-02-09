@@ -39,7 +39,8 @@ nav a:hover{color:#ffdd59;transform:translateY(-2px);}
 
 /* ===== HERO ===== */
 .hero{
-    background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background:linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('uploads/') center/cover no-repeat;
+    background-attachment: fixed;
     padding:100px 20px;
     text-align:center;
     color:white;
