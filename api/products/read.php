@@ -2,12 +2,8 @@
 session_start();
 require_once __DIR__ . '/../db.php';
 
-/* ===== SECURITY: CUSTOMER LOGIN REQUIRED ===== */
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
-    http_response_code(403);
-    header('Content-Type: application/json');
-    die(json_encode(['success' => false, 'message' => 'Unauthorized']));
-}
+/* ===== NOTE: PUBLIC - Anyone can view products ===== */
+/* Authentication required for: Adding to cart, checkout, orders */
 
 $stmt = $conn->query("
     SELECT p.id, p.product_name, p.price, p.image, p.description, c.category_name
