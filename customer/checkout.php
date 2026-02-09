@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
 
         // Insert into orders
         $stmt = $conn->prepare("
-            INSERT INTO orders (user_id, fullname, address, phone, total_price)
+            INSERT INTO orders (user_id, fullname, address, phone, total_amount)
             VALUES (?, ?, ?, ?, ?)
         ");
         $stmt->execute([$user_id, $fullname, $address, $phone, $total]);
