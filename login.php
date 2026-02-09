@@ -79,8 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     body {
         font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('uploads/abcd.jpg') center/cover no-repeat;
-        background-attachment: fixed;
+        background: url('uploads/abcd.jpg') center/cover no-repeat fixed;
         min-height: 100vh;
         display: flex;
         align-items: center;
