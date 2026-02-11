@@ -4,7 +4,7 @@ require_once "../api/db.php";
 
 // ===== ACCESS CONTROL =====
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer'){
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -48,9 +48,11 @@ if(isset($_POST['reorder']) && isset($_POST['order_id'])){
 /* ===== FETCH ORDERS WITH TOTAL ===== */
 $orders = $conn->prepare("
     SELECT o.id, o.created_at, o.status,
-           COALESCE(SUM(oi.price * oi.quantity),0) AS total_amount
+           COALESCE(SUM(oi.price * oi.quantity),0) AS total_amount,
+           p.transaction_id, p.card_last4, p.status as payment_status
     FROM orders o
     LEFT JOIN order_items oi ON o.id = oi.order_id
+    LEFT JOIN payments p ON o.id = p.order_id
     WHERE o.user_id = ?
     GROUP BY o.id
     ORDER BY o.created_at DESC
@@ -163,7 +165,7 @@ function toggleDetails(orderId){
                 <?php foreach($orders as $order): ?>
                 <tr>
                     <td>#<?= htmlspecialchars($order['id']) ?></td>
-                    <td style="font-weight:600;color:#667eea;">$<?= number_format($order['total_amount'], 2) ?></td>
+                    <td style="font-weight:600;color:#667eea;">TZS <?= number_format($order['total_amount'], 2) ?></td>
                     <td>
                         <?php if($order['status'] === 'pending'): ?>
                             <span class="status pending">⏳ Pending</span>
@@ -176,6 +178,10 @@ function toggleDetails(orderId){
                     <td><?= date('M d, Y', strtotime($order['created_at'])) ?></td>
                     <td>
                         <button class="action-btn details-btn" onclick="toggleDetails(<?= $order['id'] ?>)">👁️ Details</button>
+
+                        <?php if($order['status']=='completed' && $order['transaction_id']): ?>
+                        <a href="payment_success.php?order=<?= $order['id'] ?>" class="action-btn details-btn" style="display:inline-block;text-decoration:none;text-align:center;">💳 Payment</a>
+                        <?php endif; ?>
 
                         <?php if($order['status']=='pending'): ?>
                         <form method="POST" style="display:inline;">
@@ -202,7 +208,7 @@ function toggleDetails(orderId){
                         ?>
                         <ul>
                             <?php foreach($items as $item): ?>
-                                <li>📦 <strong><?= htmlspecialchars($item['product_name']) ?></strong> × <?= $item['quantity'] ?> = <strong>$<?= number_format($item['price'] * $item['quantity'],2) ?></strong></li>
+                                <li>📦 <strong><?= htmlspecialchars($item['product_name']) ?></strong> × <?= $item['quantity'] ?> = <strong>TZS <?= number_format($item['price'] * $item['quantity'],2) ?></strong></li>
                             <?php endforeach; ?>
                         </ul>
                         <?php else: ?>
@@ -214,68 +220,6 @@ function toggleDetails(orderId){
                 <?php endforeach; ?>
             </table>
         </div>
-    <?php endif; ?>
-</div>
-
-</body>
-</html>
-
-    <?php if(count($orders) === 0): ?>
-        <p>You have no orders yet. <a href="shop.php">Shop now!</a></p>
-    <?php else: ?>
-        <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-            <?php foreach($orders as $order): ?>
-            <tr>
-                <td>#<?= htmlspecialchars($order['id']) ?></td>
-                <td class="total">$<?= number_format($order['total_amount'], 2) ?></td>
-                <td><span class="status <?= strtolower($order['status']) ?>"><?= ucfirst($order['status']) ?></span></td>
-                <td><?= htmlspecialchars($order['created_at']) ?></td>
-                <td>
-                    <button class="action-btn details-btn" onclick="toggleDetails(<?= $order['id'] ?>)">Details</button>
-
-                    <?php if($order['status']=='pending'): ?>
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                        <button type="submit" name="cancel_order" class="action-btn cancel-btn">Cancel</button>
-                    </form>
-                    <?php endif; ?>
-
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                        <button type="submit" name="reorder" class="action-btn reorder-btn">Reorder</button>
-                    </form>
-                </td>
-            </tr>
-
-            <!-- Details row -->
-            <tr id="details-<?= $order['id'] ?>" class="details-row">
-                <td colspan="5">
-                    <?php
-                    $stmt = $conn->prepare("SELECT oi.*, p.product_name FROM order_items oi JOIN products p ON oi.product_id=p.id WHERE oi.order_id=?");
-                    $stmt->execute([$order['id']]);
-                    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    if(count($items) > 0):
-                    ?>
-                    <ul>
-                        <?php foreach($items as $item): ?>
-                            <li><?= htmlspecialchars($item['product_name']) ?> x <?= $item['quantity'] ?> - $<?= number_format($item['price'] * $item['quantity'],2) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <?php else: ?>
-                        <p>No items in this order.</p>
-                    <?php endif; ?>
-                </td>
-            </tr>
-
-            <?php endforeach; ?>
-        </table>
     <?php endif; ?>
 </div>
 

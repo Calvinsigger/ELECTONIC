@@ -91,7 +91,7 @@ tr:last-child td{border-bottom:none;}
     <div class="sidebar">
         <h2>📊 Admin Panel</h2>
         <a href="admin_dashboard.php">🏠 Dashboard</a>
-        <a href="products.php">📦 Products</a>
+        <a href="manage_products.php">📦 Products</a>
         <a href="categories.php">🏷️ Categories</a>
         <a href="users.php">👥 Users</a>
         <a href="orders.php">📋 Orders</a>

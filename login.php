@@ -31,24 +31,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if ($user && password_verify($password, $user["password_hash"])) {
 
+                    // Check if admin is trying to access shopping (add_to_cart from home page)
+                    if ($user["role"] === "admin" && isset($_GET['add_to_cart'])) {
+                        $error = "❌ Admins cannot shop. Please use a customer account.";
+                    }
                     // Check if user is blocked
-                    if ($user["status"] === "blocked") {
-                        $error = "Your account has been blocked. Contact admin.";
+                    elseif ($user["status"] === "blocked") {
+                        $blocked_email = htmlspecialchars($user["email"]);
+                        $error = "blocked|" . $blocked_email;
                     } else {
                         // Store session
                         $_SESSION["user_id"]   = $user["id"];
                         $_SESSION["fullname"]  = $user["fullname"];
                         $_SESSION["role"]      = $user["role"];
 
-                        // Redirect based on role
-                        if ($user["role"] === "admin") {
-                            header("Location: admin/admin_dashboard.php");
+                        // Check if customer is adding product after login
+                        $redirect_location = "";
+                        if ($user["role"] === "customer" && isset($_GET['add_to_cart'])) {
+                            $_SESSION['add_to_cart_product_id'] = (int)$_GET['add_to_cart'];
+                            $redirect_location = "customer/cart.php";
+                        } elseif ($user["role"] === "admin") {
+                            $redirect_location = "admin/admin_dashboard.php";
                         } elseif ($user["role"] === "customer") {
-                            header("Location: customer/customer_dashboard.php");
+                            $redirect_location = "customer/customer_dashboard.php";
                         } else {
                             $error = "User role not recognized!";
                         }
-                        exit;
+
+                        if ($redirect_location) {
+                            header("Location: " . $redirect_location);
+                            exit;
+                        }
                     }
 
                 } else {
@@ -251,7 +264,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h2>User Login</h2>
 
     <?php if (!empty($error)): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
+        <p class="error"><?php
+        // Check if it's a blocked account message and display it with the link
+        if (strpos($error, 'blocked') !== false) {
+            list($type, $blocked_email) = explode('|', $error, 2);
+            echo "❌ Your account has been blocked. <a href='blocked_contact.php?email=" . urlencode($blocked_email) . "' style='color:#0066cc;text-decoration:underline;'>Click here to contact support</a>";
+        } else {
+            echo htmlspecialchars($error);
+        }
+        ?></p>
     <?php endif; ?>
 
     <form method="POST" autocomplete="off">

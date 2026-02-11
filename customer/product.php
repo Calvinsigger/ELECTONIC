@@ -154,7 +154,7 @@ footer{background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;
     <div class="product-info">
         <h1><?= htmlspecialchars($product['product_name']) ?></h1>
         <div class="category"><?= htmlspecialchars($product['category_name']) ?></div>
-        <div class="price">$<?= number_format($product['price'], 2) ?></div>
+        <div class="price">TZS <?= number_format($product['price'], 2) ?></div>
         <div class="description"><?= nl2br(htmlspecialchars($product['description'])) ?></div>
 
         <div class="stock <?= $inStock ? 'in' : 'out' ?>">

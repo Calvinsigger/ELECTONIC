@@ -313,7 +313,7 @@ body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100
     <div class="sidebar">
         <h2>📊 Admin Panel</h2>
         <a href="admin_dashboard.php">🏠 Dashboard</a>
-        <a href="products.php">📦 Products</a>
+        <a href="manage_products.php">📦 Products</a>
         <a href="categories.php">🏷️ Categories</a>
         <a href="users.php">👥 Users</a>
         <a href="orders.php">📋 Orders</a>
@@ -410,8 +410,8 @@ body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100
                                 <tr>
                                     <td><?= htmlspecialchars($item['product_name']) ?></td>
                                     <td><?= $item['quantity'] ?></td>
-                                    <td>$<?= number_format($item['price'], 2) ?></td>
-                                    <td>$<?= number_format($subtotal, 2) ?></td>
+                                    <td>TZS <?= number_format($item['price'], 2) ?></td>
+                                    <td>TZS <?= number_format($subtotal, 2) ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -422,7 +422,7 @@ body{background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);min-height:100
                     <div class="total-section">
                         <div class="total-amount">
                             <span class="label">Total Order Amount:</span>
-                            <span class="value">$<?= number_format($totalAmount, 2) ?></span>
+                            <span class="value">TZS <?= number_format($totalAmount, 2) ?></span>
                         </div>
                     </div>
                 </div>

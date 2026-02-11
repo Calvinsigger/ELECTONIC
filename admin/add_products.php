@@ -151,7 +151,7 @@ img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #
     <div class="sidebar">
         <h2>📊 Admin Panel</h2>
         <a href="admin_dashboard.php">🏠 Dashboard</a>
-        <a href="products.php">📦 Products</a>
+        <a href="manage_products.php">📦 Products</a>
         <a href="categories.php">🏷️ Categories</a>
         <a href="users.php">👥 Users</a>
         <a href="orders.php">📋 Orders</a>
@@ -201,7 +201,7 @@ img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #
                     <td>#<?= $p['id'] ?></td>
                     <td><?= $p['image'] ? "<img src='../uploads/{$p['image']}' alt='{$p['product_name']}'>" : "—" ?></td>
                     <td><?= htmlspecialchars($p['product_name']) ?></td>
-                    <td>$<?= number_format($p['price'],2) ?></td>
+                    <td>TZS <?= number_format($p['price'],2) ?></td>
                     <td><?= $p['stock'] ?></td>
                     <td><?= htmlspecialchars($p['category_name']) ?></td>
                     <td>

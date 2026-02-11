@@ -14,6 +14,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $totalUsers = $conn->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $totalProducts = $conn->query("SELECT COUNT(*) FROM products")->fetchColumn();
 $totalOrders = $conn->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+$unreadMessages = $conn->query("SELECT COUNT(*) FROM customer_messages WHERE status = 'unread'")->fetchColumn();
+$newMessages = $conn->query("SELECT COUNT(*) FROM customer_messages WHERE admin_viewed = 'no'")->fetchColumn();
 
 /* ===== RECENT ORDERS WITH DYNAMIC TOTAL ===== */
 $recentOrders = $conn->query("
@@ -95,16 +97,24 @@ function toggleDetails(orderId){
     <div class="sidebar">
         <h2>📊 Admin Panel</h2>
         <a href="admin_dashboard.php">🏠 Dashboard</a>
-        <a href="products.php">📦 Products</a>
+        <a href="manage_products.php">📦 Products</a>
         <a href="categories.php">🏷️ Categories</a>
         <a href="users.php">👥 Users</a>
         <a href="orders.php">📋 Orders</a>
+        <a href="messages.php">💬 Messages<?= $newMessages > 0 ? ' <span style="background:#ff5722;color:white;padding:2px 8px;border-radius:12px;font-size:11px;margin-left:5px;font-weight:700;">' . $newMessages . '</span>' : '' ?></a>
         <a href="../logout.php">🚪 Logout</a>
     </div>
 
     <!-- ===== MAIN ===== -->
     <div class="main">
         <h1>Dashboard Overview</h1>
+
+        <?php if ($newMessages > 0): ?>
+            <div style="background:#ffe0b2;border-left:5px solid #ff9800;padding:15px 20px;border-radius:8px;margin-bottom:25px;color:#e65100;font-weight:500;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+                <span>🔔 <strong><?= $newMessages ?></strong> new customer message<?= $newMessages === 1 ? '' : 's' ?>!</span>
+                <a href="messages.php" style="background:#ff9800;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;transition:all 0.3s ease;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">View Messages →</a>
+            </div>
+        <?php endif; ?>
 
         <!-- ===== STATS ===== -->
         <div class="cards">
@@ -119,6 +129,10 @@ function toggleDetails(orderId){
             <div class="card">
                 <h3>Total Orders</h3>
                 <p><?= $totalOrders ?></p>
+            </div>
+            <div class="card" style="border-left-color:#ff6b6b;">
+                <h3>Unread Messages</h3>
+                <p style="color:#ff6b6b;"><?= $unreadMessages ?></p>
             </div>
         </div>
 
@@ -156,7 +170,7 @@ function toggleDetails(orderId){
                                 <?php if($items): ?>
                                     <ul>
                                     <?php foreach($items as $item): ?>
-                                        <li><?= htmlspecialchars($item['product_name']) ?> x <?= $item['quantity'] ?> - $<?= number_format($item['price'] * $item['quantity'],2) ?></li>
+                                        <li><?= htmlspecialchars($item['product_name']) ?> x <?= $item['quantity'] ?> - TZS <?= number_format($item['price'] * $item['quantity'],2) ?></li>
                                     <?php endforeach; ?>
                                     </ul>
                                 <?php else: ?>

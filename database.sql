@@ -58,7 +58,7 @@ CREATE TABLE `products` (
 -- ===============================================
 -- TABLE 4: CART
 -- ===============================================
-CREATE TABLE `cart` (
+CREATE TABLE `cart' (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
   `product_id` INT NOT NULL,
@@ -103,6 +103,50 @@ CREATE TABLE `order_items` (
   INDEX `idx_product_id` (`product_id`),
   FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===============================================
+-- TABLE 7: PAYMENTS
+-- ===============================================
+CREATE TABLE `payments` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `order_id` INT NOT NULL UNIQUE,
+  `user_id` INT NOT NULL,
+  `amount` DECIMAL(10, 2) NOT NULL,
+  `payment_method` VARCHAR(50) NOT NULL,
+  `card_last4` VARCHAR(4) NULL,
+  `transaction_id` VARCHAR(255) UNIQUE NULL,
+  `status` ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_user_id` (`user_id`),
+  INDEX `idx_order_id` (`order_id`),
+  INDEX `idx_status` (`status`),
+  FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===============================================
+-- TABLE 8: CUSTOMER_MESSAGES
+-- ===============================================
+CREATE TABLE `customer_messages` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `admin_reply` TEXT NULL,
+  `status` ENUM('unread', 'read') DEFAULT 'unread',
+  `replied` ENUM('yes', 'no') DEFAULT 'no',
+  `seen_reply` ENUM('yes', 'no') DEFAULT 'no',
+  `admin_viewed` ENUM('yes', 'no') DEFAULT 'no',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `replied_at` TIMESTAMP NULL,
+  INDEX `idx_user_id` (`user_id`),
+  INDEX `idx_status` (`status`),
+  INDEX `idx_replied` (`replied`),
+  INDEX `idx_seen_reply` (`seen_reply`),
+  INDEX `idx_admin_viewed` (`admin_viewed`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===============================================
@@ -159,19 +203,19 @@ INSERT INTO `products` (`product_name`, `price`, `category_id`, `image`, `descri
 -- SAMPLE DATA: ORDERS
 -- ===============================================
 INSERT INTO `orders` (`user_id`, `fullname`, `address`, `phone`, `total_amount`, `status`) VALUES
-(2, 'John Doe', '123 Main Street, New York, NY 10001', '+1-234-567-8900', 1999.98, 'completed'),
-(3, 'Jane Smith', '456 Oak Avenue, Los Angeles, CA 90001', '+1-234-567-8901', 499.99, 'completed'),
-(4, 'Mike Johnson', '789 Pine Road, Chicago, IL 60601', '+1-234-567-8902', 1149.97, 'pending');
+(2, 'John Doe', '123 Main Street, New York, NY 10001', '+1-234-567-8900', 2299.98, 'completed'),
+(3, 'Jane Smith', '456 Oak Avenue, Los Angeles, CA 90001', '+1-234-567-8901', 1299.99, 'completed'),
+(4, 'Mike Johnson', '789 Pine Road, Chicago, IL 60601', '+1-234-567-8902', 2499.98, 'pending');
 
 -- ===============================================
 -- SAMPLE DATA: ORDER_ITEMS
 -- ===============================================
 INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`, `price`) VALUES
 (1, 3, 1, 999.99),
-(1, 6, 1, 999.99),
-(2, 6, 1, 499.99),
+(1, 6, 1, 1299.99),
+(2, 6, 1, 1299.99),
 (3, 1, 1, 999.99),
-(3, 2, 1, 149.98);
+(3, 2, 1, 1499.99);
 
 -- ===============================================
 -- CREATE INDEXES FOR BETTER PERFORMANCE
@@ -183,9 +227,11 @@ CREATE INDEX `idx_products_category_stock` ON `products` (`category_id`, `stock`
 -- ===============================================
 -- DATABASE SETUP COMPLETE
 -- ===============================================
--- Total Tables: 6
+-- Total Tables: 8
 -- Users: 4 (1 admin, 3 customers)
 -- Categories: 8
 -- Products: 12
 -- Orders: 3 (with order items)
+-- Payments: Ready for transactions
+-- Customer Messages: For blocked/support requests
 -- ===============================================

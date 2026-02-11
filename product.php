@@ -1,6 +1,12 @@
 <?php
 session_start();
 $isLoggedIn = isset($_SESSION['user_id']);
+
+// Redirect admins to their dashboard
+if ($isLoggedIn && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header("Location: admin/admin_dashboard.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -296,6 +302,124 @@ footer {
         width: 100%;
     }
 }
+
+/* ===== AUTH MODAL ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+    font-size: 28px;
+    color: #0a3d62;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-btn-login {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.modal-btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.modal-btn-register {
+    background: #f0f0f0;
+    color: #0a3d62;
+    border: 2px solid #667eea;
+}
+
+.modal-btn-register:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #0a3d62;
+    transform: rotate(90deg);
+}
+
 </style>
 </head>
 
@@ -331,6 +455,19 @@ footer {
 <footer>
     &copy; 2026 ElectroStore | Quality Electronics
 </footer>
+
+<!-- ===== AUTH MODAL ===== -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+        <h2>🔐 Access Required</h2>
+        <p>To add items to your cart, please log in or create an account</p>
+        <div class="modal-buttons">
+            <a href="login.php?add_to_cart=" id="loginLink" class="modal-btn modal-btn-login">🔑 Log In</a>
+            <a href="register.php" class="modal-btn modal-btn-register">📝 Register</a>
+        </div>
+    </div>
+</div>
 
 <script>
 const loggedIn = <?= $isLoggedIn ? 'true' : 'false' ?>;
@@ -374,28 +511,48 @@ function filterCategory(category){
 function renderProducts(products){
     const list = document.getElementById("productList");
     list.innerHTML = "";
-
     products.forEach(p => {
+        const imageUrl = p.image ? ('uploads/' + encodeURIComponent(p.image)) : 'uploads/new.png';
         list.innerHTML += `
-        <div class="card" onclick="handleClick()">
+        <div class="card">
             <span class="sale">OFFER</span>
-            <img src="uploads/${p.image}">
+            <img src="${imageUrl}" alt="${p.product_name}" onerror="this.onerror=null;this.src='uploads/new.png'">
             <div class="card-body">
                 <h3>${p.product_name}</h3>
                 <div class="category">${p.category_name}</div>
-                <div class="price">$${p.price}</div>
-                <button>Add to Cart</button>
+                <div class="price">TZS ${p.price}</div>
+                <button onclick="handleClick(${p.id})">Add to Cart</button>
             </div>
         </div>`;
     });
 }
 
-/* ===== LOGIN CHECK ===== */
-function handleClick(){
+/* ===== LOGIN CHECK - PASS PRODUCT ID IF ADDING TO CART ===== */
+function handleClick(productId){
     if(!loggedIn){
-        window.location.href = "login.php";
+        // Show auth modal with login and register options
+        const loginLink = document.getElementById('loginLink');
+        loginLink.href = "login.php?add_to_cart=" + productId;
+        openAuthModal();
     }else{
         window.location.href = "customer/cart.php";
+    }
+}
+
+/* ===== AUTH MODAL FUNCTIONS ===== */
+function openAuthModal(){
+    document.getElementById('authModal').classList.add('active');
+}
+
+function closeAuthModal(){
+    document.getElementById('authModal').classList.remove('active');
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event){
+    const modal = document.getElementById('authModal');
+    if(event.target == modal){
+        closeAuthModal();
     }
 }
 </script>

@@ -172,4 +172,136 @@ function isEmpty($value) {
 function getErrorMessage($validation) {
     return $validation['message'] ?? 'Validation failed.';
 }
+
+/**
+ * Validate credit card number (Luhn algorithm)
+ */
+function validateCardNumber($cardNumber) {
+    $cardNumber = preg_replace('/\D/', '', $cardNumber);
+    
+    if (empty($cardNumber)) {
+        return ['valid' => false, 'message' => 'Card number is required.'];
+    }
+    
+    if (strlen($cardNumber) < 13 || strlen($cardNumber) > 19) {
+        return ['valid' => false, 'message' => 'Card number must be between 13-19 digits.'];
+    }
+    
+    // Luhn algorithm validation
+    $sum = 0;
+    $isEven = false;
+    
+    for ($i = strlen($cardNumber) - 1; $i >= 0; $i--) {
+        $digit = (int)$cardNumber[$i];
+        
+        if ($isEven) {
+            $digit *= 2;
+            if ($digit > 9) {
+                $digit -= 9;
+            }
+        }
+        
+        $sum += $digit;
+        $isEven = !$isEven;
+    }
+    
+    if ($sum % 10 !== 0) {
+        return ['valid' => false, 'message' => 'Invalid card number.'];
+    }
+    
+    return ['valid' => true, 'value' => $cardNumber];
+}
+
+/**
+ * Validate card expiry date
+ */
+function validateCardExpiry($month, $year) {
+    $month = trim($month);
+    $year = trim($year);
+    
+    if (!preg_match('/^\d{1,2}$/', $month) || !preg_match('/^\d{2,4}$/', $year)) {
+        return ['valid' => false, 'message' => 'Invalid expiry date format.'];
+    }
+    
+    $month = (int)$month;
+    $year = (int)$year;
+    
+    if ($month < 1 || $month > 12) {
+        return ['valid' => false, 'message' => 'Month must be between 01-12.'];
+    }
+    
+    // Convert 2-digit year to 4-digit
+    if ($year < 100) {
+        $year += 2000;
+    }
+    
+    $currentYear = (int)date('Y');
+    $currentMonth = (int)date('m');
+    
+    if ($year < $currentYear || ($year === $currentYear && $month < $currentMonth)) {
+        return ['valid' => false, 'message' => 'Card has expired.'];
+    }
+    
+    return ['valid' => true, 'value' => "$month/$year"];
+}
+
+/**
+ * Validate CVV
+ */
+function validateCVV($cvv) {
+    $cvv = trim($cvv);
+    
+    if (empty($cvv)) {
+        return ['valid' => false, 'message' => 'CVV is required.'];
+    }
+    
+    if (!preg_match('/^\d{3,4}$/', $cvv)) {
+        return ['valid' => false, 'message' => 'CVV must be 3-4 digits.'];
+    }
+    
+    return ['valid' => true, 'value' => $cvv];
+}
+
+/**
+ * Validate cardholder name
+ */
+function validateCardholderName($name) {
+    $name = trim($name);
+    
+    if (strlen($name) < 3) {
+        return ['valid' => false, 'message' => 'Cardholder name must be at least 3 characters.'];
+    }
+    
+    if (strlen($name) > 100) {
+        return ['valid' => false, 'message' => 'Cardholder name is too long.'];
+    }
+    
+    if (!preg_match('/^[a-zA-Z\s\-\.\']+$/', $name)) {
+        return ['valid' => false, 'message' => 'Cardholder name contains invalid characters.'];
+    }
+    
+    return ['valid' => true, 'value' => $name];
+}
+
+/**
+ * Validate Tanzanian mobile number
+ */
+function validateMobileNumber($phone) {
+    $phone = trim($phone);
+    
+    if (empty($phone)) {
+        return ['valid' => false, 'message' => 'Mobile number is required.'];
+    }
+    
+    // Remove spaces, hyphens, and plus sign for validation
+    $cleanPhone = preg_replace('/[\s\-\+]/', '', $phone);
+    
+    // Check if it's a valid Tanzanian number
+    // Valid formats: 0XXXXXXXXX (10 digits) or 255XXXXXXXXX (12 digits)
+    if (preg_match('/^(0|255)[67]\d{8}$/', $cleanPhone)) {
+        return ['valid' => true, 'value' => $cleanPhone];
+    }
+    
+    return ['valid' => false, 'message' => 'Invalid Tanzanian mobile number. Use format: 07XXXXXXXX or +255XXXXXXXXX'];
+}
 ?>

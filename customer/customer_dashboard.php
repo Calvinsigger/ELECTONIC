@@ -4,7 +4,7 @@ require_once "../api/db.php";
 
 // Access control: only logged-in customers
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -25,6 +25,14 @@ $stmt = $conn->prepare("
 ");
 $stmt->execute([$user_id]);
 $recentOrders = $stmt->fetchAll();
+
+// Fetch unread admin replies count
+$stmt = $conn->prepare("
+    SELECT COUNT(*) as count FROM customer_messages 
+    WHERE user_id = ? AND replied = 'yes' AND seen_reply = 'no'
+");
+$stmt->execute([$user_id]);
+$unreadReplies = $stmt->fetch()['count'];
 ?>
 
 <!DOCTYPE html>
@@ -133,14 +141,21 @@ button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0
         <h2>My Account</h2>
         <a href="customer_dashboard.php">Dashboard</a>
         <a href="profile.php">Profile</a>
-        <a href="shop.php">shop</a>
-         <a href="profile.php">Profile</a>
+        <a href="shop.php">Shop</a>
         <a href="my_orders.php">My Orders</a>
+        <a href="view_messages.php">💬 My Messages<?= $unreadReplies > 0 ? ' <span style="background:#ff5722;color:white;padding:2px 8px;border-radius:12px;font-size:10px;margin-left:5px;font-weight:700;">' . $unreadReplies . '</span>' : '' ?></a>
+        <a href="contact_admin.php">📧 Contact Admin</a>
     </div>
 
     <!-- ===== MAIN ===== -->
     <div class="main">
         <h1>Welcome, <?= htmlspecialchars($user['fullname']) ?></h1>
+
+        <?php if ($unreadReplies > 0): ?>
+            <div style="background:#fff3cd;border-left:5px solid #ff9800;padding:15px 20px;border-radius:8px;margin-bottom:25px;color:#e65100;font-weight:500;">
+                🔔 You have <strong><?= $unreadReplies ?></strong> new admin repl<?= $unreadReplies === 1 ? 'y' : 'ies' ?>! <a href="view_messages.php" style="color:#d84315;text-decoration:underline;font-weight:600;">View now →</a>
+            </div>
+        <?php endif; ?>
 
         <!-- ===== INFO CARDS ===== -->
         <div class="cards">

@@ -157,15 +157,15 @@ footer{background:linear-gradient(180deg, #0a3d62 0%, #062d48 100%);color:white;
 
     <div class="filter-row">
         <div class="filter-group">
-            <label for="priceMin">💰 Price Range: $<span id="minDisplay"><?= $minPrice ?></span> - $<span id="maxDisplay"><?= $maxPrice ?></span></label>
+            <label for="priceMin">💰 Price Range: TZS<span id="minDisplay"><?= $minPrice ?></span> - TZS<span id="maxDisplay"><?= $maxPrice ?></span></label>
             <input type="range" id="priceMin" min="<?= $minPrice ?>" max="<?= $maxPrice ?>" value="<?= $minPrice ?>" step="1" style="width:100%">
-            <div class="price-range-display">Min: $<span id="priceMinVal"><?= $minPrice ?></span></div>
+            <div class="price-range-display">Min: TZS<span id="priceMinVal"><?= $minPrice ?></span></div>
         </div>
 
         <div class="filter-group">
             <label>&nbsp;</label>
             <input type="range" id="priceMax" min="<?= $minPrice ?>" max="<?= $maxPrice ?>" value="<?= $maxPrice ?>" step="1" style="width:100%">
-            <div class="price-range-display">Max: $<span id="priceMaxVal"><?= $maxPrice ?></span></div>
+            <div class="price-range-display">Max: TZS<span id="priceMaxVal"><?= $maxPrice ?></span></div>
         </div>
     </div>
 
@@ -288,8 +288,7 @@ function displayProducts(products) {
             
             <h3>${product.product_name}</h3>
             <div class="category">${product.category_name}</div>
-            <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
-            
+                <div class="price">TZS ${parseFloat(product.price).toFixed(2)}</div>
             <div class="stock-status ${product.stock > 10 ? 'in-stock' : product.stock > 0 ? 'low-stock' : 'out-of-stock'}">
                 ${product.stock > 10 ? '✓ In Stock' : product.stock > 0 ? `⚠ Low Stock (${product.stock})` : '✗ Out of Stock'}
             </div>

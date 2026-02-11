@@ -89,9 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                         // Clear cart
                         $conn->prepare("DELETE FROM cart WHERE user_id=?")->execute([$user_id]);
 
-                        $orderMsg = "✅ Your order has been placed successfully! Order ID: #$order_id";
-                        $emptyCart = true;
-                        $cartItems = [];
+                        // Redirect to payment page
+                        $_SESSION['order_id'] = $order_id;
+                        $_SESSION['order_amount'] = $total;
+                        header("Location: payment.php");
+                        exit;
 
                     } catch (PDOException $e) {
                         $orderMsg = "Error placing order: " . $e->getMessage();
@@ -261,17 +263,17 @@ form button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,
                     <img src="../uploads/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
                     <div class="info">
                         <h3>📦 <?= htmlspecialchars($item['product_name']) ?></h3>
-                        <div class="qty-price">Quantity: <?= $item['quantity'] ?> × $<?= number_format($item['price'],2) ?></div>
+                        <div class="qty-price">Quantity: <?= $item['quantity'] ?> × TZS <?= number_format($item['price'],2) ?></div>
                     </div>
                     <div class="price">
-                        $<?= number_format($item['price']*$item['quantity'],2) ?>
+                        TZS <?= number_format($item['price']*$item['quantity'],2) ?>
                     </div>
                 </div>
                 <?php $grandTotal += $item['price'] * $item['quantity']; ?>
             <?php endforeach; ?>
         </div>
 
-        <div class="cart-total">💰 Grand Total: $<?= number_format($grandTotal,2) ?></div>
+        <div class="cart-total">💰 Grand Total: TZS <?= number_format($grandTotal,2) ?></div>
 
         <!-- SHIPPING FORM -->
         <form method="POST" onsubmit="return validateCheckoutForm()">
@@ -282,69 +284,6 @@ form button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,
             <button type="submit" name="place_order">✓ Place Order</button>
         </form>
     <?php endif; ?>
-</div>
-
-<script>
-function validateCheckoutForm() {
-    const fullname = document.querySelector('input[name="fullname"]').value.trim();
-    const address = document.querySelector('textarea[name="address"]').value.trim();
-    const phone = document.querySelector('input[name="phone"]').value.trim();
-
-    if (fullname.length < 2) {
-        alert("Name must be at least 2 characters.");
-        return false;
-    }
-
-    if (address.length < 5) {
-        alert("Address must be at least 5 characters.");
-        return false;
-    }
-
-    if (phone.length < 7 || phone.length > 20) {
-        alert("Phone number must be between 7-20 characters.");
-        return false;
-    }
-
-    return true;
-}
-</script>
-</body>
-</html>
-
-<?php if($orderMsg): ?>
-    <p class="message"><?= $orderMsg ?></p>
-<?php endif; ?>
-
-<?php if(!empty($emptyCart)): ?>
-    <p class="empty">🛒 Your cart is empty! <a href="shop.php">Continue shopping</a></p>
-<?php else: ?>
-    <!-- CART ITEMS -->
-    <?php $grandTotal=0; ?>
-    <?php foreach($cartItems as $item): ?>
-        <div class="cart-item">
-            <img src="../uploads/<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
-            <div class="info">
-                <h3><?= htmlspecialchars($item['product_name']) ?></h3>
-                <div class="qty-price">Quantity: <?= $item['quantity'] ?> × $<?= number_format($item['price'],2) ?></div>
-            </div>
-            <div class="price">
-                $<?= number_format($item['price']*$item['quantity'],2) ?>
-            </div>
-        </div>
-        <?php $grandTotal += $item['price'] * $item['quantity']; ?>
-    <?php endforeach; ?>
-
-    <div class="cart-total">Grand Total: $<?= number_format($grandTotal,2) ?></div>
-
-    <!-- SHIPPING FORM -->
-    <form method="POST" onsubmit="return validateCheckoutForm()">
-        <?= getCSRFTokenInput() ?>
-        <input type="text" name="fullname" placeholder="Full Name (min 2 characters)" minlength="2" maxlength="100" required value="<?= sanitizeOutput($_POST['fullname'] ?? '') ?>">
-        <textarea name="address" placeholder="Shipping Address (min 5 characters)" minlength="5" maxlength="255" rows="3" required><?= sanitizeOutput($_POST['address'] ?? '') ?></textarea>
-        <input type="tel" name="phone" placeholder="Phone Number (7-20 digits)" pattern="[0-9\+\-\(\)\s]{7,20}" maxlength="20" required value="<?= sanitizeOutput($_POST['phone'] ?? '') ?>">
-        <button type="submit" name="place_order">Place Order</button>
-    </form>
-<?php endif; ?>
 </div>
 
 <script>

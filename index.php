@@ -259,17 +259,7 @@ footer p{font-weight:500;}
 </section>
 
 <!-- ===== PRODUCTS ===== -->
-<section class="products-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>🔍 Featured Products</h2>
-            <p>Browse our wide selection of high-quality electronics and gadgets</p>
-        </div>
-        <div class="products" id="productsContainer">
-            <!-- Products loaded dynamically -->
-        </div>
-    </div>
-</section>
+<!-- Featured products section removed -->
 
 <!-- ===== CONTACT INFORMATION ===== -->
 <section class="contact">
@@ -299,31 +289,7 @@ footer p{font-weight:500;}
     <p>&copy; 2026 ElectroStore. All rights reserved. 🛍️</p>
 </footer>
 
-<script>
-document.addEventListener("DOMContentLoaded", ()=>{
-    fetch("api/products/read.php")
-    .then(res => res.json())
-    .then(data => {
-        const container = document.getElementById("productsContainer");
-        container.innerHTML = "";
-        data.forEach(p=>{
-            const clickHandler = <?= $userLoggedIn ? "''\"'" : "'window.location.href=\\'login.php\\';'" ?>;
-            container.innerHTML+=`
-            <div class="product-card">
-                <img src="uploads/${p.image}" alt="${p.product_name}">
-                <div class="product-card-content">
-                    <h3>${p.product_name}</h3>
-                    <p>$${p.price}</p>
-                    <button onclick="${<?= $userLoggedIn ? 'true' : 'false' ?> ? `alert('Add to cart: ${p.product_name}')` : `window.location.href='login.php'`}">🛒 Add to Cart</button>
-                </div>
-            </div>`;
-        });
-    })
-    .catch(err => {
-        document.getElementById("productsContainer").innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">Failed to load products</p>';
-    });
-});
-</script>
+<!-- Product loader script removed -->
 
 </body>
 </html>

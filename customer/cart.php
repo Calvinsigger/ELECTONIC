@@ -10,6 +10,38 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
 
 $user_id = $_SESSION['user_id'];
 
+/* ===== AUTO-ADD PRODUCT AFTER LOGIN ===== */
+if (isset($_SESSION['add_to_cart_product_id'])) {
+    $product_id = $_SESSION['add_to_cart_product_id'];
+    unset($_SESSION['add_to_cart_product_id']); // Remove after using
+
+    try {
+        // Check if product exists
+        $stmt = $conn->prepare("SELECT id FROM products WHERE id = ?");
+        $stmt->execute([$product_id]);
+        $product = $stmt->fetch();
+
+        if ($product) {
+            // Check if already in cart
+            $stmt = $conn->prepare("SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?");
+            $stmt->execute([$user_id, $product_id]);
+            $cartItem = $stmt->fetch();
+
+            if ($cartItem) {
+                // Increment quantity
+                $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + 1 WHERE id = ?");
+                $stmt->execute([$cartItem['id']]);
+            } else {
+                // Insert new cart item
+                $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, 1)");
+                $stmt->execute([$user_id, $product_id]);
+            }
+        }
+    } catch (PDOException $e) {
+        // Silently continue if there's an error
+    }
+}
+
 /* FETCH CART ITEMS */
 $stmt = $conn->prepare("
     SELECT 
@@ -169,7 +201,7 @@ button{border:none;padding:10px 16px;border-radius:6px;cursor:pointer;color:whit
             <?= htmlspecialchars($item['product_name']) ?>
         </div>
     </td>
-    <td data-label="Price">$<?= number_format($item['price'],2) ?></td>
+    <td data-label="Price">TZS <?= number_format($item['price'],2) ?></td>
     <td data-label="Quantity">
         <input type="number"
                min="1"
@@ -178,7 +210,7 @@ button{border:none;padding:10px 16px;border-radius:6px;cursor:pointer;color:whit
                onchange="updateQty(<?= $item['cart_id'] ?>, this.value)">
     </td>
     <td data-label="Subtotal">
-        $<span id="sub<?= $item['cart_id'] ?>">
+        TZS<span id="sub<?= $item['cart_id'] ?>">
         <?= number_format($item['price']*$item['quantity'],2) ?>
         </span>
     </td>
@@ -193,7 +225,7 @@ button{border:none;padding:10px 16px;border-radius:6px;cursor:pointer;color:whit
 
 <div class="summary">
     <span>Total:</span>
-    <span class="total">$<span id="total"><?= number_format($total,2) ?></span></span>
+    <span class="total">TZS<span id="total"><?= number_format($total,2) ?></span></span>
 </div>
 
 <div class="checkout">
