@@ -4,22 +4,31 @@
    File: api/db.php
    =============================== */
 
-$host = "localhost";
-$dbname = "electronics_ordering";
-$username = "root";      // default for XAMPP
-$password = "";          // default for XAMPP
+// Read DB configuration from environment variables so the app can
+// run both locally (XAMPP) and on hosted platforms (Elastic Beanstalk / RDS).
+$host = getenv('DB_HOST') ?: 'localhost';
+$port = getenv('DB_PORT') ?: '';
+$dbname = getenv('DB_NAME') ?: 'electronics_ordering';
+$username = getenv('DB_USER') ?: getenv('DB_USERNAME') ?: 'root';
+$password = getenv('DB_PASS') ?: getenv('DB_PASSWORD') ?: '';
 
 try {
-    $conn = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8",
-        $username,
-        $password
-    );
+    $dsn = "mysql:host={$host}";
+    if (!empty($port)) {
+        $dsn .= ";port={$port}";
+    }
+    $dsn .= ";dbname={$dbname};charset=utf8";
 
-    // Set PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    $conn = new PDO($dsn, $username, $password, $options);
 
 } catch (PDOException $e) {
-    // Stop execution if connection fails
-    die("Database connection failed: " . $e->getMessage());
+    // In production we avoid outputting credentials; show a generic message
+    error_log('Database connection failed: ' . $e->getMessage());
+    die('Database connection failed.');
 }
